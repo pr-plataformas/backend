@@ -1,0 +1,23 @@
+import { registerAs } from '@nestjs/config';
+
+export default registerAs('config', () => {
+  return {
+    app: {
+      port: parseInt(process.env.APP_PORT, 10) || 3000,
+      environment: process.env.NODE_ENV || 'development',
+    },
+    postgres: {
+      dbName: process.env.POSTGRES_DB,
+      port: parseInt(process.env.POSTGRES_PORT, 10),
+      password: process.env.POSTGRES_PASSWORD,
+      user: process.env.POSTGRES_USER,
+      host: process.env.POSTGRES_HOST,
+    },
+    jwt: {
+      accessSecret: process.env.ACCESS_JWT_SECRET,
+      refreshSecret: process.env.REFRESH_JWT_SECRET,
+      accessExpiresIn: process.env.ACCESS_EXPIRES_IN,
+      refreshExpiresIn: process.env.REFRESH_EXPIRES_IN,
+    },
+  };
+});
