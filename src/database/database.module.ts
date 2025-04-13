@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import config from '../config/config';
-import { User } from '../user/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 
 @Module({
   imports: [
