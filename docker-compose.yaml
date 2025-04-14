@@ -1,29 +1,28 @@
 services:
-  postgres:
-    image: postgres:latest 
+  users_db:
+    image: postgres:latest
     container_name: users_db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: users_db
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - ./postgres_data:/data/db
+
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:latest
     container_name: pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: root@admin.com
       PGADMIN_DEFAULT_PASSWORD: root
     ports:
-      - "5051:80"
-    networks:
-      - backend
+      - '5051:80'
     volumes:
-      - pgadmin_data:/var/lib/pgadmin
+      - ./pgadmin_data:/var/lib/pgadmin
     deploy:
       resources:
         limits:
-          cpus: "0.25"
+          cpus: '0.25'
           memory: 256M

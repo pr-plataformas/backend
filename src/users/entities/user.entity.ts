@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UserRole } from '../../common/constants';
 
 @Entity('users')
 export class User {
@@ -25,6 +24,7 @@ export class User {
 
   @Column({
     name: 'role',
+    enum: ['admin', 'user'],
     type: 'varchar',
     nullable: false,
     comment: 'Rol del usuario',
