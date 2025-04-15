@@ -1,0 +1,3 @@
+describe('AuthService', () => {
+  let service;
+});

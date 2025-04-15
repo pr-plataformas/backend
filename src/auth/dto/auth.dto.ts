@@ -9,6 +9,11 @@ import {
 } from 'class-validator';
 
 export class RegisterUserDto {
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(100)
+  fullName: string;
+
   @ApiProperty({
     examples: [
       {
@@ -24,32 +29,21 @@ export class RegisterUserDto {
   @ApiProperty({
     examples: [
       {
-        userName: 'username',
+        name: 'Password',
       },
     ],
-    description: 'The username of the user',
+    description: 'The password of the user',
   })
-  @IsString({ message: 'username must be a string' })
-  @MinLength(6, { message: 'username is too short' })
-  @MaxLength(32, { message: 'username is too long' })
-  @IsNotEmpty({ always: true, message: 'username is required' })
-  readonly userName: string;
-
-  @ApiProperty({
-    examples: [
-      {
-        name: 'name',
-      },
-    ],
-    description: 'The name of the user',
-  })
-  @IsString({ message: 'name must be a string' })
-  @MinLength(8, { message: 'name is too short' })
-  @MaxLength(32, { message: 'name is too long' })
-  @Matches(/^(?=.*[A-Z])(?=.*[a-zA-Z0-9])(?=.*\W).{8,}$/, {
-    message:
-      'name must contain at least one uppercase letter, one number, and one special character',
-  })
+  @IsString({ message: 'password must be a string' })
+  @MinLength(8, { message: 'password is too short' })
+  @MaxLength(32, { message: 'password is too long' })
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+    {
+      message:
+        'La contraseña debe tener al menos 8 caracteres, incluyendo una letra mayúscula, una letra minúscula, un número y un carácter especial (@$!%*?&).',
+    },
+  )
   @IsNotEmpty({ always: true })
   readonly password: string;
 }
@@ -79,9 +73,12 @@ export class LoginUserDto {
   @MinLength(8, { message: 'password is too short' })
   @MaxLength(32, { message: 'password is too long' })
   @IsNotEmpty({ always: true, message: 'password is required' })
-  @Matches(/^(?=.*[A-Z])(?=.*[a-zA-Z0-9])(?=.*\W).{8,}$/, {
-    message:
-      'name must contain at least one uppercase letter, one number, and one special character',
-  })
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+    {
+      message:
+        'La contraseña debe tener al menos 8 caracteres, incluyendo una letra mayúscula, una letra minúscula, un número y un carácter especial (@$!%*?&).',
+    },
+  )
   readonly password: string;
 }

@@ -5,18 +5,19 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { firstValueFrom } from 'rxjs';
-import config from 'src/config/config';
+import { JwtService } from 'src/jwt/jwt.service';
+import { UsersService } from 'src/users/users.service';
 import { LoginUserDto, RegisterUserDto } from './dto/auth.dto';
+import config from 'src/config/config';
+import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     @Inject(config.KEY)
     private readonly configService: ConfigType<typeof config>,
+    private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -35,47 +36,58 @@ export class AuthService {
   }
 
   async register(registerUserInput: RegisterUserDto) {
-    // try {
-    //   const registerUser = await firstValueFrom(
-    //     this._clientProxyUser.send(UserMSG.CREATE, registerUserInput),
-    //   );
-    //   return registerUser;
-    // } catch (error) {
-    //   console.log(error);
-    //   throw error;
-    // }
+    try {
+      const registerUser = await this.usersService.findByEmail(
+        registerUserInput.email,
+      );
+
+      if (registerUser) {
+        throw new NotFoundException('User already exists');
+      }
+
+      const hashedPassword = await this.hashPassword(
+        registerUserInput.password,
+      );
+
+      const newUser = await this.usersService.createUser({
+        ...registerUserInput,
+        password: hashedPassword,
+      });
+
+      return newUser;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   async login({ email, password }: LoginUserDto) {
-    // try {
-    //   const foundUser = await firstValueFrom(
-    //     this._clientProxyUser.send(UserMSG.FIND_EMAIL, email),
-    //   );
-    //   if (foundUser.statusCode === 404)
-    //     throw new NotFoundException("User doesn't exist");
-    //   const isPasswordMatch = await bcrypt.compare(
-    //     password,
-    //     foundUser.data.password,
-    //   );
-    //   if (!isPasswordMatch) {
-    //     throw new UnauthorizedException("Credentials don't match");
-    //   }
-    //   const payload = { sub: foundUser.data._id };
-    //   const accessToken = await this.jwtService.signAsync(payload);
-    //   const refreshToken = await this.jwtService.signAsync(payload, {
-    //     secret: this.configService.jwt.refreshSecret,
-    //     expiresIn: this.configService.jwt.refreshExpiresIn,
-    //   });
-    //   return {
-    //     statusCode: HttpStatus.OK,
-    //     userId: foundUser.data._id,
-    //     playerId: foundUser.data.playerId,
-    //     accessToken,
-    //     refreshToken,
-    //   };
-    // } catch (error) {
-    //   throw error;
-    // }
+    try {
+      const foundUser = await this.usersService.findByEmail(email);
+      if (!foundUser) throw new NotFoundException("User doesn't exist");
+
+      const isPasswordMatch = await this.comparePassword({
+        loginPassword: password,
+        hashPassword: foundUser.password,
+      });
+      if (!isPasswordMatch) {
+        throw new UnauthorizedException("Credentials don't match");
+      }
+      const payload = { sub: foundUser.id };
+      const accessToken = await this.jwtService.signAsync(payload);
+      const refreshToken = await this.jwtService.signAsync(payload, {
+        secret: this.configService.jwt.refreshSecret,
+        expiresIn: this.configService.jwt.refreshExpiresIn,
+      });
+      return {
+        foundUser,
+        statusCode: HttpStatus.OK,
+        accessToken,
+        refreshToken,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async refresh(refreshToken: string) {
@@ -94,5 +106,24 @@ export class AuthService {
     // } catch (error) {
     //   throw new UnauthorizedException('Invalid refresh token');
     // }
+  }
+
+  async hashPassword(password: string) {
+    const salt = await bcrypt.genSalt(10);
+    return bcrypt.hash(password, salt);
+  }
+
+  async comparePassword({
+    loginPassword,
+    hashPassword,
+  }: {
+    loginPassword: string;
+    hashPassword: string;
+  }): Promise<boolean> {
+    try {
+      return await bcrypt.compare(loginPassword, hashPassword);
+    } catch (e) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
   }
 }
