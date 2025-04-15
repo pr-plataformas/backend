@@ -96,6 +96,29 @@ export class UsersService {
     }
   }
 
+  async findByEmail(email: string): Promise<User> {
+    try {
+      const user = await this.usersRepository.findOne({
+        where: { email, deletedAt: IsNull() },
+      });
+      if (!user) {
+        throw new RpcException({
+          statusCode: HttpStatus.NOT_FOUND,
+          message: `Usuario con email ${email} no encontrado`,
+        });
+      }
+      return user;
+    } catch (error) {
+      this.logger.error(error.message, error.stack);
+      if (error instanceof RpcException) throw error;
+
+      throw new RpcException({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: `Error desconocido al buscar el usuario por email: ${error.message}`,
+      });
+    }
+  }
+
   async findUsersByRole(role: UserRole): Promise<User[]> {
     try {
       const users = await this.usersRepository.find({

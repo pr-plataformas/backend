@@ -1,13 +1,23 @@
-import { IsEnum, IsNotEmpty, IsString, MaxLength } from 'class-validator';
-import { UserRole } from '../../common/constants';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  Matches,
+  MaxLength,
+} from 'class-validator';
 
 export class CreateUserDto {
+  @IsNotEmpty()
+  @IsEmail()
+  @MaxLength(100)
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  password: string;
+
   @IsNotEmpty()
   @IsString()
   @MaxLength(100)
   fullName: string;
-
-  @IsNotEmpty()
-  @IsString()
-  role: string;
 }

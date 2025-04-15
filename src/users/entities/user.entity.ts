@@ -13,6 +13,16 @@ export class User {
   id: string;
 
   @Column({
+    name: 'email',
+    type: 'varchar',
+    length: 100,
+    nullable: false,
+    unique: true,
+    comment: 'Email del usuario',
+  })
+  email: string;
+
+  @Column({
     name: 'full_name',
     type: 'varchar',
     length: 100,
@@ -27,9 +37,19 @@ export class User {
     enum: ['admin', 'user'],
     type: 'varchar',
     nullable: false,
+    default: 'user',
     comment: 'Rol del usuario',
   })
   role: string;
+
+  @Column({
+    name: 'password',
+    type: 'varchar',
+    length: 255,
+    nullable: false,
+    comment: 'Contraseña del usuario',
+  })
+  password: string;
 
   @CreateDateColumn({
     name: 'created_at',
