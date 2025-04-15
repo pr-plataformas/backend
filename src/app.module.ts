@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { VideoModule } from './video/video.module';
 import { ContentModule } from './content/content.module';
 import { DatabaseModule } from './database/database.module';
+import { JwtModule } from './jwt/jwt.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { DatabaseModule } from './database/database.module';
     VideoModule,
     ContentModule,
     DatabaseModule,
+    JwtModule,
   ],
 })
 export class AppModule {}

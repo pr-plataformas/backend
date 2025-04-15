@@ -73,8 +73,10 @@ async function bootstrap() {
   });
 
   const options = new DocumentBuilder()
-    .setTitle('Vialidad API 2024')
-    .setDescription('App para la gestión de vialidad')
+    .setTitle('API Videoteca enfermería')
+    .setDescription(
+      'App para la gestión manuales de procedimientos en enfermería',
+    )
     .setVersion('0.0.1')
     .addBearerAuth()
     .build();
