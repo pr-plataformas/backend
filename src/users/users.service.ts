@@ -1,4 +1,10 @@
-import { HttpStatus, Injectable, Logger } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, QueryFailedError, Repository } from 'typeorm';
@@ -98,21 +104,13 @@ export class UsersService {
 
   async findByEmail(email: string): Promise<User> {
     try {
-      const user = await this.usersRepository.findOne({
+      return await this.usersRepository.findOne({
         where: { email, deletedAt: IsNull() },
       });
-      if (!user) {
-        throw new RpcException({
-          statusCode: HttpStatus.NOT_FOUND,
-          message: `Usuario con email ${email} no encontrado`,
-        });
-      }
-      return user;
     } catch (error) {
       this.logger.error(error.message, error.stack);
-      if (error instanceof RpcException) throw error;
 
-      throw new RpcException({
+      throw new InternalServerErrorException({
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: `Error desconocido al buscar el usuario por email: ${error.message}`,
       });

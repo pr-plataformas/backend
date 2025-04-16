@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   HttpStatus,
   Inject,
   Injectable,
@@ -42,7 +43,7 @@ export class AuthService {
       );
 
       if (registerUser) {
-        throw new NotFoundException('User already exists');
+        throw new ConflictException('User already exists');
       }
 
       const hashedPassword = await this.hashPassword(
@@ -79,11 +80,17 @@ export class AuthService {
         secret: this.configService.jwt.refreshSecret,
         expiresIn: this.configService.jwt.refreshExpiresIn,
       });
+
+      const { password: foundUserPassword, ...userWithoutPassword } = foundUser;
+
       return {
-        foundUser,
         statusCode: HttpStatus.OK,
-        accessToken,
-        refreshToken,
+        message: 'Login successful',
+        data: {
+          user: userWithoutPassword,
+          accessToken,
+          refreshToken,
+        },
       };
     } catch (error) {
       throw error;

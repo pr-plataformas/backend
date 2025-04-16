@@ -2,9 +2,13 @@ import * as compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 
-import { Logger, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
@@ -28,6 +32,9 @@ async function bootstrap() {
       disableErrorMessages: false,
     }),
   );
+
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+
   app.useGlobalInterceptors(new TimeoutInterceptor(5000));
 
   app.setGlobalPrefix('api/v1');
