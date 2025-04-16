@@ -10,6 +10,9 @@ import {
   UploadedFile,
   Res,
   HttpStatus,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
@@ -61,7 +64,7 @@ export class VideoController {
     file: Express.Multer.File,
     @Body() createVideoDto: CreateVideoDto,
   ) {
-    const video = await this.videosService.upload(file, createVideoDto);
+    const video = await this.videoService.upload(file, createVideoDto);
     return {
       statusCode: 201,
       message: 'Video uploaded successfully',
@@ -89,7 +92,7 @@ export class VideoController {
 
   @Get(':id/stream')
   async streamVideo(@Param('id') id: string, @Res() res: Response) {
-    const videoData = await this.videosService.getVideoStream(id);
+    const videoData = await this.videoService.getVideoStream(id);
 
     // Configurar cabeceras para streaming
     res.set({

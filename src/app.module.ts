@@ -16,11 +16,11 @@ import { CommonServicesModule } from './common/common-services/common-services.m
     UsersModule,
     HealthModule,
     AuthModule,
-    // VideoModule,
+    VideoModule,
     ContentModule,
     DatabaseModule,
     JwtModule,
-    // CommonServicesModule,
+    CommonServicesModule,
   ],
 })
 export class AppModule {}
