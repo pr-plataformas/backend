@@ -1,4 +1,4 @@
-const { error } = require("console");
+const { error } = require('console');
 
 module.exports = {
   parser: '@typescript-eslint/parser',
@@ -23,11 +23,10 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
-    "prittier/prittier": {
-      error:
-      {
-        endOfLine: 'auto'
-      }
-    }
+    'prittier/prittier': {
+      error: {
+        endOfLine: 'auto',
+      },
+    },
   },
 };

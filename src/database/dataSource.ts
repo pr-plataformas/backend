@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { User } from '../users/entities/user.entity';
+import { Video } from '../video/entities/video.entity';
 
 config();
 
@@ -16,7 +17,7 @@ export const dataSourceOptions: DataSourceOptions = {
   migrationsRun: true,
   migrations: ['src/database/migrations/*.ts'],
   migrationsTableName: 'migrations',
-  entities: [User],
+  entities: [User, Video],
 };
 
 export const connectionSource = new DataSource(dataSourceOptions);

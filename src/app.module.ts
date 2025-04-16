@@ -8,6 +8,7 @@ import { VideoModule } from './video/video.module';
 import { ContentModule } from './content/content.module';
 import { DatabaseModule } from './database/database.module';
 import { JwtModule } from './jwt/jwt.module';
+import { CommonServicesModule } from './common/common-services/common-services.module';
 
 @Module({
   imports: [
@@ -15,10 +16,11 @@ import { JwtModule } from './jwt/jwt.module';
     UsersModule,
     HealthModule,
     AuthModule,
-    VideoModule,
+    // VideoModule,
     ContentModule,
     DatabaseModule,
     JwtModule,
+    // CommonServicesModule,
   ],
 })
 export class AppModule {}

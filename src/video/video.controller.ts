@@ -1,34 +1,125 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseInterceptors,
+  UploadedFile,
+  Res,
+  HttpStatus,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { Response } from 'express';
 import { VideoService } from './video.service';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
 
-@Controller('video')
+@ApiTags('videos')
+@Controller('videos')
 export class VideoController {
   constructor(private readonly videoService: VideoService) {}
 
-  @Post()
-  create(@Body() createVideoDto: CreateVideoDto) {
-    return this.videoService.create(createVideoDto);
+  @Post('upload')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: {
+        fileSize: 1024 * 1024 * 500, // 500MB límite máximo
+      },
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+        title: {
+          type: 'string',
+        },
+        description: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  async uploadVideo(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 500 }), // 500MB
+          new FileTypeValidator({ fileType: 'video/*' }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+    @Body() createVideoDto: CreateVideoDto,
+  ) {
+    const video = await this.videosService.upload(file, createVideoDto);
+    return {
+      statusCode: 201,
+      message: 'Video uploaded successfully',
+      data: video,
+    };
   }
 
   @Get()
-  findAll() {
-    return this.videoService.findAll();
+  async findAll() {
+    const videos = await this.videoService.findAll();
+    return {
+      statusCode: HttpStatus.OK,
+      data: videos,
+    };
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.videoService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const video = await this.videoService.findOne(id);
+    return {
+      statusCode: HttpStatus.OK,
+      data: video,
+    };
+  }
+
+  @Get(':id/stream')
+  async streamVideo(@Param('id') id: string, @Res() res: Response) {
+    const videoData = await this.videosService.getVideoStream(id);
+
+    // Configurar cabeceras para streaming
+    res.set({
+      'Content-Type': videoData.contentType,
+      'Content-Disposition': 'inline',
+      'Accept-Ranges': 'bytes',
+    });
+
+    res.send(videoData.buffer);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateVideoDto: UpdateVideoDto) {
-    return this.videoService.update(+id, updateVideoDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateVideoDto: UpdateVideoDto,
+  ) {
+    const video = await this.videoService.update(id, updateVideoDto);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Video actualizado exitosamente',
+      data: video,
+    };
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.videoService.remove(+id);
+  async remove(@Param('id') id: string) {
+    await this.videoService.remove(id);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Video eliminado exitosamente',
+    };
   }
 }

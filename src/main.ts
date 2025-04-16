@@ -16,7 +16,7 @@ import { TimeoutInterceptor } from './common/interceptors/time-out.interceptor';
 import config from './config/config';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bodyParser: true });
 
   const logger = new Logger('Main');
 
@@ -76,6 +76,11 @@ async function bootstrap() {
       'Strict-Transport-Security',
       'max-age=31536000; includeSubDomains',
     );
+    next();
+  });
+
+  app.use((req, res, next) => {
+    res.setHeader('Accept', 'multipart/form-data');
     next();
   });
 
