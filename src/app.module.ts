@@ -9,6 +9,9 @@ import { ContentModule } from './content/content.module';
 import { DatabaseModule } from './database/database.module';
 import { JwtModule } from './jwt/jwt.module';
 import { CommonServicesModule } from './common/common-services/common-services.module';
+import { CategoryModule } from './category/category.module';
+
+
 
 @Module({
   imports: [
@@ -21,6 +24,7 @@ import { CommonServicesModule } from './common/common-services/common-services.m
     DatabaseModule,
     JwtModule,
     CommonServicesModule,
+    CategoryModule,
   ],
 })
 export class AppModule {}

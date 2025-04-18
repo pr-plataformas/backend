@@ -5,7 +5,10 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { Category } from '../../category/entities/category.entity';
 
 @Entity('videos')
 export class Video {
@@ -63,6 +66,22 @@ export class Video {
     comment: 'Tamaño del archivo en bytes',
   })
   fileSize: number;
+
+  // Relación con la categoría
+  @ManyToOne(() => Category, (category) => category.videos, {
+    eager: true,
+    nullable: true,
+  })
+  @JoinColumn({ name: 'category_id' })
+  category: Category;
+
+  @Column({
+    name: 'category_id',
+    type: 'uuid',
+    nullable: true,
+    comment: 'ID de la categoría asociada',
+  })
+  categoryId: string;
 
   @CreateDateColumn({
     name: 'created_at',
