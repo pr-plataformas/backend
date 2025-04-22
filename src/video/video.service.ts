@@ -52,8 +52,6 @@ export class VideoService {
       uploadDuration: Math.floor(uploadTime), // Guardar el tiempo de carga como entero
     });
 
-    console.log(`Video created with key: ${fileKey}`);
-
     return this.videoRepository.save(video);
   }
 
