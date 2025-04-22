@@ -4,9 +4,12 @@ import { ConfigType } from '@nestjs/config';
 import config from '../config/config';
 import { ConfigModule } from 'src/config/config.module';
 import { JwtService } from './jwt.service';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
+    UsersModule,
     NestJwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [config.KEY],
@@ -19,7 +22,7 @@ import { JwtService } from './jwt.service';
       },
     }),
   ],
-  exports: [JwtService, NestJwtModule],
-  providers: [JwtService],
+  exports: [JwtService, NestJwtModule, JwtStrategy],
+  providers: [JwtService, JwtStrategy],
 })
 export class JwtModule {}
