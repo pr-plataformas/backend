@@ -1,13 +1,31 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginUserDto, RegisterUserDto } from './dto/auth.dto';
 import { RefreshTokenGuard } from './guards/refresh.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 @ApiTags('Authentication')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Get('verify')
+  @UseGuards(AuthGuard('jwt'))
+  async verifyToken(@Req() request: Request) {
+    // El AuthGuard ya verificó el token, solo necesitamos devolver la respuesta
+    return {
+      isValid: true,
+    };
+  }
 
   @Post('login')
   async login(@Body() loginUserInput: LoginUserDto) {

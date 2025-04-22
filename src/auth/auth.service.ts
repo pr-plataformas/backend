@@ -22,18 +22,25 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<any> {
-    // try {
-    //   const user = await firstValueFrom(
-    //     this._clientProxyUser.send(UserMSG.VALID_USER, {
-    //       username,
-    //       password,
-    //     }),
-    //   );
-    //   return user;
-    // } catch (error) {
-    //   throw new UnauthorizedException('Invalid credentials');
-    // }
+  async validateToken(token: string) {
+    try {
+      const payload = this.jwtService.verify(token);
+      const user = await this.usersService.findOne(payload.sub);
+
+      if (!user) {
+        throw new UnauthorizedException('Usuario no encontrado');
+      }
+
+      return {
+        isValid: true,
+        user,
+      };
+    } catch (error) {
+      return {
+        isValid: false,
+        error: 'Token inválido o expirado',
+      };
+    }
   }
 
   async register(registerUserInput: RegisterUserDto) {
