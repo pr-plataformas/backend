@@ -64,6 +64,15 @@ export class Video {
   })
   fileSize: number;
 
+  @Column({
+    name: 'upload_duration',
+    type: 'integer',
+    nullable: false,
+    default: 0,
+    comment: 'Duración de la subida en segundos',
+  })
+  uploadDuration: number;
+
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamp',

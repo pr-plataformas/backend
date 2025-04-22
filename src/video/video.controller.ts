@@ -1,25 +1,25 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseInterceptors,
-  UploadedFile,
-  Res,
-  HttpStatus,
-  ParseFilePipe,
-  MaxFileSizeValidator,
   FileTypeValidator,
+  Get,
+  HttpStatus,
+  MaxFileSizeValidator,
+  Param,
+  ParseFilePipe,
+  Patch,
+  Post,
+  Res,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-import { VideoService } from './video.service';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
+import { VideoService } from './video.service';
 
 @ApiTags('videos')
 @Controller('videos')
@@ -30,7 +30,7 @@ export class VideoController {
   @UseInterceptors(
     FileInterceptor('file', {
       limits: {
-        fileSize: 1024 * 1024 * 500, // 500MB límite máximo
+        fileSize: 1024 * 1024 * 2000, // 2GB límite máximo
       },
     }),
   )
@@ -56,7 +56,7 @@ export class VideoController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 500 }), // 500MB
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 2000 }), // 2GB
           new FileTypeValidator({ fileType: 'video/*' }),
         ],
       }),

@@ -35,7 +35,7 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
-  app.useGlobalInterceptors(new TimeoutInterceptor(5000));
+  app.useGlobalInterceptors(new TimeoutInterceptor(300000));
 
   app.setGlobalPrefix('api/v1');
 
@@ -45,12 +45,21 @@ async function bootstrap() {
 
   app.use(compression());
 
+  // Limita cada IP a 100 solicitudes por ventana de 15 minutos
   // app.use(
   //   rateLimit({
   //     windowMs: 15 * 60 * 1000, // 15 minutos
-  //     max: 100, // Limita cada IP a 100 solicitudes por ventana de 15 minutos
+  //     max: 100,
   //   }),
   // );
+
+  // Extend timeout for file uploads
+  // app.use((req, res, next) => {
+  //   if (req.url?.includes('/videos/upload')) {
+  //     res.setTimeout(300000); // 5 minutes
+  //   }
+  //   next();
+  // });
 
   // Protección contra ataques XSS
   app.use((req, res, next) => {

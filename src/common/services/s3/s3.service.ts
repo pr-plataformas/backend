@@ -1,15 +1,14 @@
+import {
+  CompleteMultipartUploadCommand,
+  CreateMultipartUploadCommand,
+  DeleteObjectCommand,
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+  UploadPartCommand,
+} from '@aws-sdk/client-s3';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-  DeleteObjectCommand,
-  CreateMultipartUploadCommand,
-  UploadPartCommand,
-  CompleteMultipartUploadCommand,
-  AbortMultipartUploadCommand,
-} from '@aws-sdk/client-s3';
 import config from 'src/config/config';
 
 @Injectable()
@@ -71,7 +70,6 @@ export class S3Service {
 
       // Dividir el archivo en partes
       const partCount = Math.ceil(file.length / chunkSize);
-      const uploadPromises = [];
       const parts = [];
 
       for (let i = 0; i < partCount; i++) {

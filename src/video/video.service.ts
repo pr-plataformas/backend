@@ -22,6 +22,9 @@ export class VideoService {
     const fileKey = `videos/${uuid()}-${file.originalname}`;
     let fileUrl: string;
 
+    // Registrar el tiempo antes de comenzar la carga
+    const startTime = Date.now();
+
     // Usar carga multiparte si es mayor a 5MB
     if (file.size > 5 * 1024 * 1024) {
       fileUrl = await this.s3Service.uploadLargeFile(
@@ -37,13 +40,19 @@ export class VideoService {
       );
     }
 
+    // Calcular el tiempo que tomó la carga (en segundos)
+    const uploadTime = (Date.now() - startTime) / 1000;
+
     const video = this.videoRepository.create({
       ...createVideoDto,
       fileKey,
       fileUrl,
       contentType: file.mimetype,
       fileSize: file.size,
+      uploadDuration: Math.floor(uploadTime), // Guardar el tiempo de carga como entero
     });
+
+    console.log(`Video created with key: ${fileKey}`);
 
     return this.videoRepository.save(video);
   }
