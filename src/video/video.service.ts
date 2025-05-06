@@ -1,18 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { S3Service } from 'src/common/services/s3/s3.service';
 import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
 import { Video } from './entities/video.entity';
+import { VideoStorageService } from './video-storage.service';
 
 @Injectable()
 export class VideoService {
   constructor(
     @InjectRepository(Video)
     private readonly videoRepository: Repository<Video>,
-    private readonly s3Service: S3Service,
+    private readonly videoStorageService: VideoStorageService,
   ) {}
 
   async upload(
@@ -21,26 +21,14 @@ export class VideoService {
   ): Promise<Video> {
     const fileKey = `videos/${uuid()}-${file.originalname}`;
     let fileUrl: string;
-
-    // Registrar el tiempo antes de comenzar la carga
     const startTime = Date.now();
 
-    // Usar carga multiparte si es mayor a 5MB
     if (file.size > 5 * 1024 * 1024) {
-      fileUrl = await this.s3Service.uploadLargeFile(
-        fileKey,
-        file.buffer,
-        file.mimetype,
-      );
+      fileUrl = await this.videoStorageService.uploadLargeFile(fileKey, file);
     } else {
-      fileUrl = await this.s3Service.uploadFile(
-        fileKey,
-        file.buffer,
-        file.mimetype,
-      );
+      fileUrl = await this.videoStorageService.uploadFile(fileKey, file);
     }
 
-    // Calcular el tiempo que tomó la carga (en segundos)
     const uploadTime = (Date.now() - startTime) / 1000;
 
     const video = this.videoRepository.create({
@@ -49,7 +37,7 @@ export class VideoService {
       fileUrl,
       contentType: file.mimetype,
       fileSize: file.size,
-      uploadDuration: Math.floor(uploadTime), // Guardar el tiempo de carga como entero
+      uploadDuration: Math.floor(uploadTime),
     });
 
     return this.videoRepository.save(video);
@@ -59,13 +47,10 @@ export class VideoService {
     id: string,
   ): Promise<{ buffer: Buffer; contentType: string }> {
     const video = await this.videoRepository.findOne({ where: { id } });
-
     if (!video) {
       throw new NotFoundException(`Video with ID ${id} not found`);
     }
-
-    const buffer = await this.s3Service.getFile(video.fileKey);
-
+    const buffer = await this.videoStorageService.getFile(video.fileKey);
     return {
       buffer,
       contentType: video.contentType,
@@ -92,11 +77,7 @@ export class VideoService {
 
   async remove(id: string) {
     const video = await this.findOne(id);
-
-    // Eliminar archivo de S3
-    await this.s3Service.deleteFile(video.fileKey);
-
-    // Eliminar registro de la base de datos
+    await this.videoStorageService.deleteFile(video.fileKey);
     return this.videoRepository.softDelete(id);
   }
 }

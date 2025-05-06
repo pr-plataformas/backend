@@ -9,6 +9,9 @@ export class Manual {
   @Column()
   title: string;
 
-  @OneToMany(() => Section, section => section.manual, { cascade: true })
+  @OneToMany(() => Section, (section) => section.manual, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   sections: Section[];
 }
