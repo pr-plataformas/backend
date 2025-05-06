@@ -4,7 +4,7 @@ services:
     container_name: users_db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: contrasena
       POSTGRES_DB: users_db
     ports:
       - '5432:5432'

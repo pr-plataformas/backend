@@ -5,6 +5,10 @@ import config from '../config/config';
 import { User } from '../users/entities/user.entity';
 import { Video } from '../video/entities/video.entity';
 
+import { Manual } from '../manual/entities/manual.entity';
+import { Section } from '../manual/entities/section.entity';
+import { Subsection } from '../manual/entities/subsection.entity';
+import { Block } from '../manual/entities/block.entity';
 @Module({
   imports: [
     ConfigModule,
@@ -22,11 +26,19 @@ import { Video } from '../video/entities/video.entity';
           database: dbName,
           autoLoadEntities: true,
           migrationsRun: true,
+          synchronize: true,
+
         };
       },
     }),
-    TypeOrmModule.forFeature([User, Video]),
-  ],
+    TypeOrmModule.forFeature([
+      User,
+      Video,
+      Manual,
+      Section,
+      Subsection,
+      Block,
+    ]),  ],
   exports: [TypeOrmModule],
 })
 export class DatabaseModule {}

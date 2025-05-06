@@ -118,3 +118,6 @@ async function bootstrap() {
 }
 
 bootstrap();
+import { getMetadataArgsStorage } from 'typeorm';
+console.log('Entidades detectadas por TypeORM:');
+console.log(getMetadataArgsStorage().tables.map(t => t.name));
