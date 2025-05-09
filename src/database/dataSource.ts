@@ -6,8 +6,6 @@ import { Manual } from '../manual/entities/manual.entity';
 import { Section } from '../manual/entities/section.entity';
 import { Subsection } from '../manual/entities/subsection.entity';
 import { Block } from '../manual/entities/block.entity';
-import { Category } from '../category/entities/category.entity';
-
 config();
 
 export const dataSourceOptions: DataSourceOptions = {
@@ -22,7 +20,7 @@ export const dataSourceOptions: DataSourceOptions = {
   migrationsRun: true,
   migrations: ['src/database/migrations/*.ts'],
   migrationsTableName: 'migrations',
-  entities: [User, Video, Category, Manual, Section, Subsection, Block], 
+  entities: [User, Video, Manual, Section, Subsection, Block], 
 };
 
 export const connectionSource = new DataSource(dataSourceOptions);
