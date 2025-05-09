@@ -93,6 +93,10 @@ async function bootstrap() {
     res.setHeader('Accept', 'multipart/form-data');
     next();
   });
+  app.use((req, res, next) => {
+    res.setTimeout(15 * 60 * 1000); // ⏱️ 15 minutos
+    next();
+  });
 
   const options = new DocumentBuilder()
     .setTitle('API Videoteca enfermería')
