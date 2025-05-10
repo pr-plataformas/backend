@@ -4,6 +4,10 @@ import { User } from '../users/entities/user.entity';
 import { Video } from '../video/entities/video.entity';
 import { Category } from '../category/entities/category.entity';
 
+import { Manual } from '../manual/entities/manual.entity';
+import { Section } from '../manual/entities/section.entity';
+import { Subsection } from '../manual/entities/subsection.entity';
+import { Block } from '../manual/entities/block.entity';
 config();
 
 export const dataSourceOptions: DataSourceOptions = {
@@ -14,11 +18,11 @@ export const dataSourceOptions: DataSourceOptions = {
   password: 'pollopollo',
   database: 'users_db',
   logging: true,
-  synchronize: false,
+  synchronize: true,
   migrationsRun: true,
   migrations: ['src/database/migrations/*.ts'],
   migrationsTableName: 'migrations',
-  entities: [User, Video,Category],
+  entities: [User, Video,Category, Manual, Section, Subsection, Block], 
 };
 
 export const connectionSource = new DataSource(dataSourceOptions);
