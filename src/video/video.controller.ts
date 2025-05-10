@@ -49,7 +49,13 @@ export class VideoController {
         description: {
           type: 'string',
         },
+        categoryId: {
+          type: 'string',
+          format: 'uuid',
+          example: 'a5a6bb97-603f-4e2e-bf94-b5b10f760a6c',
+        },
       },
+      required: ['file', 'title'],
     },
   })
   async uploadVideo(
