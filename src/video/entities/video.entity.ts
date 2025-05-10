@@ -5,10 +5,7 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-  ManyToOne,
-  JoinColumn,
 } from 'typeorm';
-import { Category } from '../../category/entities/category.entity';
 
 @Entity('videos')
 export class Video {
