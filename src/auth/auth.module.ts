@@ -1,20 +1,11 @@
-import { Module } from '@nestjs/common';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from 'src/jwt/jwt.module';
+import { Module, forwardRef } from '@nestjs/common';
+import { FirebaseAuthGuard } from './firebase-auth.guard';
+import { RolesGuard } from './roles.guard';
 import { UsersModule } from '../users/users.module';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { JwtStrategy } from './strategies/jwt.strategy';
-import { LocalStrategy } from './strategies/local.strategy';
-import { JwtService } from '@nestjs/jwt';
 
 @Module({
-  imports: [UsersModule, PassportModule, JwtModule],
-  controllers: [AuthController],
-  providers: [
-    AuthService,
-    // LocalStrategy,
-    // JwtStrategy
-  ],
+  imports: [forwardRef(() => UsersModule)],
+  providers: [FirebaseAuthGuard, RolesGuard],
+  exports: [FirebaseAuthGuard, RolesGuard],
 })
 export class AuthModule {}

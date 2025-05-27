@@ -1,4 +1,4 @@
-import * as compression from 'compression';
+import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 
