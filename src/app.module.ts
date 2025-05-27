@@ -8,6 +8,10 @@ import { VideoModule } from './video/video.module';
 import { DatabaseModule } from './database/database.module';
 import { JwtModule } from './jwt/jwt.module';
 import { CommonServicesModule } from './common/common-services/common-services.module';
+<<<<<<< HEAD
+=======
+import { CategoryModule } from './category/category.module';
+>>>>>>> fusion
 import { ManualModule } from './manual/manual.module';
 
 @Module({
@@ -20,7 +24,13 @@ import { ManualModule } from './manual/manual.module';
     DatabaseModule,
     JwtModule,
     CommonServicesModule,
+<<<<<<< HEAD
     ManualModule,
+=======
+    CategoryModule,
+    ManualModule,
+
+>>>>>>> fusion
   ],
 })
 export class AppModule {}

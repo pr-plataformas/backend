@@ -6,10 +6,12 @@ import {
   Req,
   Request,
   UseGuards,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginUserDto, RegisterUserDto } from './dto/auth.dto';
+import { LoginDto } from './dto/login.dto';
 import { RefreshTokenGuard } from './guards/refresh.guard';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -28,8 +30,10 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() loginUserInput: LoginUserDto) {
-    return await this.authService.login(loginUserInput);
+  async login(@Body() dto: LoginDto) {
+    const result = await this.authService.login(dto);
+    if (!result) throw new UnauthorizedException('Invalid credentials');
+    return result;
   }
 
   @Post('register')
