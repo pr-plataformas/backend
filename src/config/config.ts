@@ -27,5 +27,12 @@ export default registerAs('config', () => {
         bucketName: process.env.AWS_S3_BUCKET_NAME,
       },
     },
+    firebase: {
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY
+        ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+        : undefined,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    },
   };
 });

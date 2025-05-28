@@ -1,8 +1,7 @@
-import {
-  ForbiddenException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import * as admin from 'firebase-admin';
+import { PROFESOR_UCN_REGEX } from '../common/constants/ucn-email.regex';
+import { UserRole } from '../common/enums/user-role.enum';
 import { JwtService } from '../jwt/jwt.service';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
@@ -17,29 +16,24 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  // Genera el payload estándar para los tokens
-  private buildJwtPayload(user: User): JwtPayloadDto {
-    if (!user.role || !['user', 'admin'].includes(user.role)) {
-      throw new ForbiddenException('Rol de usuario no permitido');
-    }
-    return {
-      sub: user.id,
-      email: user.email,
-      role: user.role,
-    };
-  }
-
   // Registro: crea un usuario nuevo
-  async registerUser(decodedToken: any): Promise<User> {
+  async registerUser(decodedToken: admin.auth.DecodedIdToken): Promise<User> {
+    const email = decodedToken.email;
+    let role: UserRole = UserRole.ESTUDIANTE;
+    if (PROFESOR_UCN_REGEX.test(email)) {
+      role = UserRole.PROFESOR;
+    }
     return this.usersService.createUser({
       email: decodedToken.email,
-      name: decodedToken.name || decodedToken.email,
-      role: decodedToken.role || 'user',
+      fullName: decodedToken.name || decodedToken.email,
+      role,
     });
   }
 
   // Login: valida Firebase, busca/crea usuario y genera tokens
-  async loginWithFirebaseToken(decodedToken: any): Promise<LoginResponseDto> {
+  async loginWithFirebaseToken(
+    decodedToken: admin.auth.DecodedIdToken,
+  ): Promise<LoginResponseDto> {
     try {
       let user = await this.usersService.findByEmail(decodedToken.email);
       if (!user) {
@@ -72,5 +66,14 @@ export class AuthService {
     } catch (error) {
       throw new UnauthorizedException('Refresh token inválido o expirado.');
     }
+  }
+
+  // Genera el payload estándar para los tokens
+  private buildJwtPayload(user: User): JwtPayloadDto {
+    return {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    };
   }
 }

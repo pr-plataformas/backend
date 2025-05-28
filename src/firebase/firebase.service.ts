@@ -1,20 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import * as admin from 'firebase-admin';
-import { readFileSync } from 'fs';
+import { ConfigType } from '@nestjs/config';
+import config from '../config/config';
 
 @Injectable()
 export class FirebaseService {
-  private firebaseApp: admin.app.App;
+  private readonly firebaseApp: admin.app.App;
 
-  constructor() {
-    const serviceAccountPath =
-      process.env.FIREBASE_SERVICE_ACCOUNT_PATH || './serviceAccountKey.json';
-    const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf8'));
+  constructor(
+    @Inject(config.KEY)
+    private readonly configService: ConfigType<typeof config>,
+  ) {
+    const firebaseConfig = this.configService.firebase;
     if (!admin.apps.length) {
       this.firebaseApp = admin.initializeApp({
-        credential: admin.credential.cert(
-          serviceAccount as admin.ServiceAccount,
-        ),
+        credential: admin.credential.cert({
+          projectId: firebaseConfig.projectId,
+          privateKey: firebaseConfig.privateKey?.replace(/\\n/g, '\n'),
+          clientEmail: firebaseConfig.clientEmail,
+        }),
       });
     } else {
       this.firebaseApp = admin.app();

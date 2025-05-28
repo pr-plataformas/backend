@@ -1,11 +1,11 @@
 services:
-  users_db:
+  clinic_hub_db:
     image: postgres:latest
-    container_name: users_db
+    container_name: clinic_hub_db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: contrasena
-      POSTGRES_DB: users_db
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: clinic_hub_db
     ports:
       - '5432:5432'
     volumes:
