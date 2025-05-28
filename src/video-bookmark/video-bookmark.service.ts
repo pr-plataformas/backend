@@ -26,18 +26,20 @@ export class VideoBookmarkService {
   }
 
   update(id: string, dto: UpdateVideoBookmarkDto) {
-    return this.bookmarkRepository.update(id, dto);
+    // Solo actualiza campos simples, no relaciones
+    const { position, note } = dto;
+    return this.bookmarkRepository.update(id, { position, note });
   }
 
   remove(id: string) {
     return this.bookmarkRepository.delete(id);
   }
 
-  findAllByUser(userId: number) {
+  findAllByUser(userId: string) {
     return this.bookmarkRepository.find({ where: { user: { id: userId } } });
   }
 
-  findAllByUserAndVideo(userId: number, videoId: number) {
+  findAllByUserAndVideo(userId: string, videoId: string) {
     return this.bookmarkRepository.find({
       where: { user: { id: userId }, video: { id: videoId } },
     });

@@ -1,16 +1,15 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
+  Controller,
+  Delete,
+  Get,
   Param,
   Patch,
-  Delete,
+  Post,
 } from '@nestjs/common';
-import { VideoCommentService } from './video-comment.service';
-import { VideoComment } from './entities/video-comment.entity';
 import { CreateVideoCommentDto } from './dto/create-video-comment.dto';
 import { UpdateVideoCommentDto } from './dto/update-video-comment.dto';
+import { VideoCommentService } from './video-comment.service';
 
 @Controller('video-comments')
 export class VideoCommentController {
@@ -28,16 +27,16 @@ export class VideoCommentController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.service.findOne(+id);
+    return this.service.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() dto: UpdateVideoCommentDto) {
-    return this.service.update(+id, dto);
+    return this.service.update(id, dto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.service.remove(+id);
+    return this.service.remove(id);
   }
 }

@@ -9,7 +9,7 @@ import { User } from '../../users/entities/user.entity';
 import { BookmarkType } from '../../common/enums/video-interaction.enums';
 import { Video } from '../../video/entities/video.entity';
 
-@Entity()
+@Entity('video_bookmarks')
 export class VideoBookmark {
   @PrimaryGeneratedColumn('uuid')
   id: string;

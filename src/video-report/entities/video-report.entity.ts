@@ -9,7 +9,7 @@ import { User } from '../../users/entities/user.entity';
 import { Video } from '../../video/entities/video.entity';
 import { VideoReportStatus } from 'src/common/enums/video-report-status.enum';
 
-@Entity()
+@Entity('video_reports')
 export class VideoReport {
   @PrimaryGeneratedColumn('uuid')
   id: string;

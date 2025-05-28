@@ -3,11 +3,11 @@ import { IsInt, IsString, MaxLength, IsNotEmpty } from 'class-validator';
 export class CreateVideoCommentDto {
   @IsInt()
   @IsNotEmpty()
-  user: number;
+  userId: string;
 
   @IsInt()
   @IsNotEmpty()
-  video: number;
+  videoId: string;
 
   @IsString()
   @MaxLength(1000)

@@ -9,6 +9,10 @@ import { Manual } from '../manual/entities/manual.entity';
 import { Section } from '../manual/entities/section.entity';
 import { Subsection } from '../manual/entities/subsection.entity';
 import { Block } from '../manual/entities/block.entity';
+import { VideoComment } from '../video-comment/entities/video-comment.entity';
+import { VideoInteraction } from '../video-interaction/entities/video-interaction.entity';
+import { VideoReport } from '../video-report/entities/video-report.entity';
+import { VideoBookmark } from '../video-bookmark/entities/video-bookmark.entity';
 @Module({
   imports: [
     ConfigModule,
@@ -26,8 +30,8 @@ import { Block } from '../manual/entities/block.entity';
           database: dbName,
           autoLoadEntities: true,
           migrationsRun: true,
-          synchronize: true,
-
+          synchronize: process.env.NODE_ENV !== 'production',
+          logging: process.env.NODE_ENV !== 'production',
         };
       },
     }),
@@ -38,7 +42,12 @@ import { Block } from '../manual/entities/block.entity';
       Section,
       Subsection,
       Block,
-    ]),  ],
+      VideoComment,
+      VideoInteraction,
+      VideoReport,
+      VideoBookmark,
+    ]),
+  ],
   exports: [TypeOrmModule],
 })
 export class DatabaseModule {}

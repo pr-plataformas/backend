@@ -8,21 +8,31 @@ import { HealthModule } from './health/health.module';
 import { JwtModule } from './jwt/jwt.module';
 import { ManualModule } from './manual/manual.module';
 import { UsersModule } from './users/users.module';
+import { VideoBookmarkModule } from './video-bookmark/video-bookmark.module';
+import { VideoCommentModule } from './video-comment/video-comment.module';
 import { VideoInteractionModule } from './video-interaction/video-interaction.module';
+import { VideoReportModule } from './video-report/video-report.module';
 import { VideoModule } from './video/video.module';
+import { FirebaseModule } from './firebase/firebase.module';
 
 @Module({
   imports: [
+    //Set up modules
     ConfigModule,
-    UsersModule,
     HealthModule,
+    DatabaseModule,
+    CommonServicesModule,
+    JwtModule,
+    FirebaseModule,
+    //Feature modules
+    UsersModule,
     AuthModule,
     VideoModule,
-    DatabaseModule,
-    JwtModule,
-    CommonServicesModule,
     ManualModule,
     VideoInteractionModule,
+    VideoCommentModule,
+    VideoReportModule,
+    VideoBookmarkModule,
   ],
 })
 export class AppModule {}

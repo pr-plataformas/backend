@@ -9,7 +9,7 @@ import { User } from '../../users/entities/user.entity';
 import { Video } from '../../video/entities/video.entity';
 import { VideoInteractionType } from 'src/common/enums/video-interaction-type.enum';
 
-@Entity()
+@Entity('video_interactions')
 export class VideoInteraction {
   @PrimaryGeneratedColumn('uuid')
   id: string;

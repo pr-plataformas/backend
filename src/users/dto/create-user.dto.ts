@@ -8,7 +8,7 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
-  name: string;
+  fullName: string;
 
   @IsEnum(UserRole)
   @IsNotEmpty()

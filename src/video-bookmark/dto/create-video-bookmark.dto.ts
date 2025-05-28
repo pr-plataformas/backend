@@ -10,11 +10,11 @@ import { BookmarkType } from '../../common/enums/video-interaction.enums';
 export class CreateVideoBookmarkDto {
   @IsUUID()
   @IsNotEmpty()
-  user: string;
+  userId: string;
 
   @IsUUID()
   @IsNotEmpty()
-  video: string;
+  videoId: string;
 
   @IsEnum(BookmarkType)
   @IsNotEmpty()

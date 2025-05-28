@@ -1,3 +1,5 @@
+import { User } from 'src/users/entities/user.entity';
+import { Video } from 'src/video/entities/video.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -5,10 +7,8 @@ import {
   Column,
   CreateDateColumn,
 } from 'typeorm';
-import { User } from './User';
-import { Video } from './Video';
 
-@Entity()
+@Entity('video_comments')
 export class VideoComment {
   @PrimaryGeneratedColumn('uuid')
   id: string;

@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { UserRole } from '../../common/enums/user-role.enum';
 
-@Entity()
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -12,11 +13,11 @@ export class User {
   fullName: string;
 
   @Column({
-    type: 'varchar',
-    enum: ['admin', 'user'],
-    default: 'user',
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.ESTUDIANTE,
     nullable: false,
     comment: 'Rol del usuario',
   })
-  role: string;
+  role: UserRole;
 }

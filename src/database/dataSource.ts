@@ -1,16 +1,16 @@
 import { config } from 'dotenv';
+import { VideoBookmark } from 'src/video-bookmark/entities/video-bookmark.entity';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { User } from '../users/entities/user.entity';
-import { Video } from '../video/entities/video.entity';
-<<<<<<< HEAD
-=======
-import { Category } from '../category/entities/category.entity';
-
->>>>>>> fusion
+import { Block } from '../manual/entities/block.entity';
 import { Manual } from '../manual/entities/manual.entity';
 import { Section } from '../manual/entities/section.entity';
 import { Subsection } from '../manual/entities/subsection.entity';
-import { Block } from '../manual/entities/block.entity';
+import { User } from '../users/entities/user.entity';
+import { VideoComment } from '../video-comment/entities/video-comment.entity';
+import { VideoInteraction } from '../video-interaction/entities/video-interaction.entity';
+import { VideoReport } from '../video-report/entities/video-report.entity';
+import { Video } from '../video/entities/video.entity';
+
 config();
 
 export const dataSourceOptions: DataSourceOptions = {
@@ -18,22 +18,25 @@ export const dataSourceOptions: DataSourceOptions = {
   host: 'localhost',
   port: 5432,
   username: 'postgres',
-<<<<<<< HEAD
-  password: 'contrasena',
-=======
-  password: 'pollopollo',
->>>>>>> fusion
-  database: 'users_db',
+  password: 'postgres',
+  database: 'clinic_hub_db',
   logging: true,
   synchronize: true,
   migrationsRun: true,
   migrations: ['src/database/migrations/*.ts'],
   migrationsTableName: 'migrations',
-<<<<<<< HEAD
-  entities: [User, Video, Manual, Section, Subsection, Block], 
-=======
-  entities: [User, Video,Category, Manual, Section, Subsection, Block], 
->>>>>>> fusion
+  entities: [
+    User,
+    Video,
+    Manual,
+    Section,
+    Subsection,
+    Block,
+    VideoComment,
+    VideoInteraction,
+    VideoReport,
+    VideoBookmark,
+  ],
 };
 
 export const connectionSource = new DataSource(dataSourceOptions);
