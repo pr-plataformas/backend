@@ -1,64 +1,55 @@
 import {
-  Body,
   Controller,
-  Get,
+  HttpCode,
+  HttpStatus,
   Post,
   Req,
-  Request,
   UseGuards,
-  UnauthorizedException,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { LoginUserDto, RegisterUserDto } from './dto/auth.dto';
-import { LoginDto } from './dto/login.dto';
-import { RefreshTokenGuard } from './guards/refresh.guard';
-import { AuthGuard } from '@nestjs/passport';
+import { FirebaseAuthGuard } from './firebase-auth.guard';
 
+@ApiTags('auth')
 @Controller('auth')
-@ApiTags('Authentication')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Get('verify')
-  @UseGuards(AuthGuard('jwt'))
-  async verifyToken(@Req() request: Request) {
-    // El AuthGuard ya verificó el token, solo necesitamos devolver la respuesta
+  @UseGuards(FirebaseAuthGuard)
+  @ApiBearerAuth()
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({ status: 200, description: 'Login exitoso.' })
+  async login(@Req() req) {
+    // El guard ya validó el token y el dominio, y adjuntó decodedToken
+    const decodedToken = req.firebaseDecoded;
+    const { user, accessToken, refreshToken } =
+      await this.authService.loginWithFirebaseToken(decodedToken);
     return {
-      isValid: true,
+      message: 'Login exitoso',
+      status: 200,
+      data: {
+        user,
+        accessToken,
+        refreshToken,
+      },
     };
   }
 
-  @Post('login')
-  async login(@Body() dto: LoginDto) {
-    const result = await this.authService.login(dto);
-    if (!result) throw new UnauthorizedException('Invalid credentials');
-    return result;
-  }
-
-  @Post('register')
-  async register(@Body() registerUserInput: RegisterUserDto) {
-    return await this.authService.register(registerUserInput);
-  }
-
-  @Post('update-jwt')
-  @UseGuards(RefreshTokenGuard)
-  async updateJWT(@Request() req) {
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({ status: 200, description: 'Token refrescado.' })
+  async refresh(@Req() req) {
     const { refreshToken } = req.body;
-    try {
-      const updatedToken = await this.authService.refresh(refreshToken);
-      return {
-        statusCode: 200,
-        success: true,
-        message: 'JWT updated succesfully',
-        data: updatedToken,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: 'Failed to update JWT',
-        error: (error as Record<string, string>)?.message,
-      };
-    }
+    const { accessToken, user } =
+      await this.authService.refreshToken(refreshToken);
+    return {
+      message: 'Token refrescado',
+      status: 200,
+      data: {
+        user,
+        accessToken,
+      },
+    };
   }
 }

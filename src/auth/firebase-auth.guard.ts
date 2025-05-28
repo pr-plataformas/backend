@@ -1,33 +1,54 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException, ForbiddenException } from '@nestjs/common';
-import admin from './firebase-admin';
-import { UsersService } from '../users/users.service';
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { FirebaseService } from '../firebase/firebase.service';
 
 const ucnRegex = /^[^@]+@(?:[a-zA-Z0-9-]+\.)*ucn\.cl$/;
 
-
 @Injectable()
 export class FirebaseAuthGuard implements CanActivate {
-  constructor(private readonly usersService: UsersService) {}
+  private readonly logger = new Logger(FirebaseAuthGuard.name);
+  constructor(private readonly firebaseService: FirebaseService) {}
+
+  private extractToken(authHeader: string): string {
+    if (!authHeader?.startsWith('Bearer ')) {
+      this.logger.warn('No token provided in Authorization header');
+      throw new UnauthorizedException('No token provided');
+    }
+    return authHeader.split(' ')[1];
+  }
+
+  private validateInstitutionalEmail(email: string): void {
+    if (!email || !ucnRegex.test(email)) {
+      this.logger.warn(`Access denied for non-UCN email: ${email}`);
+      throw new ForbiddenException(
+        'Solo se permite acceso a correos institucionales UCN',
+      );
+    }
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
-    const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith('Bearer ')) throw new UnauthorizedException('No token provided');
-    const token = authHeader.split(' ')[1];
     try {
-      const decodedToken = await admin.auth().verifyIdToken(token);
-      const email = decodedToken.email;
-      if (!email || !ucnRegex.test(email)) {
-        throw new ForbiddenException('Solo se permite acceso a correos institucionales UCN');
-      }
-      // Asigna el rol según el correo
-      const role = email === 'eduardo.erices@alumnos.ucn.cl' ? 'admin' : 'user';
-      // Busca o crea el usuario en la base de datos
-      const user = await this.usersService.findOrCreateUserFromFirebase({ email, name: decodedToken.name, role });
-      req.user = user;
+      const token = this.extractToken(req.headers.authorization);
+      const decodedToken = await this.firebaseService.verifyIdToken(token);
+      this.validateInstitutionalEmail(decodedToken.email);
+      // Solo valida el token y el dominio, NO crea usuario aquí
+      req.firebaseDecoded = decodedToken;
+      this.logger.log(`Token válido para: ${decodedToken.email}`);
       return true;
     } catch (err) {
-      if (err instanceof UnauthorizedException || err instanceof ForbiddenException) throw err;
+      this.logger.error('Error en autenticación FirebaseAuthGuard', err);
+      if (
+        err instanceof UnauthorizedException ||
+        err instanceof ForbiddenException
+      )
+        throw err;
       throw new UnauthorizedException('Invalid token');
     }
   }
