@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Video } from '../../video/entities/video.entity';
-import { VideoInteractionType } from 'src/common/enums/video-interaction-type.enum';
+import { VideoInteractionType } from '../enum/video-interaction.enums';
 
 @Entity('video_interactions')
 export class VideoInteraction {
@@ -26,9 +26,9 @@ export class VideoInteraction {
   })
   type: VideoInteractionType;
 
-  @Column({ nullable: true })
-  reportReason?: string;
-
-  @CreateDateColumn()
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   createdAt: Date;
 }
