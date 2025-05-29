@@ -5,6 +5,7 @@ export class CreateSubsectionDto {
   @IsString()
   title: string;
 
-  @IsUUID()
+  @IsUUID('4')
+  @IsNotEmpty()
   sectionId: string;
 }

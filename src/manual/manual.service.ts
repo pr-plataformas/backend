@@ -7,6 +7,7 @@ import { CreateFullManualDto } from './dto/create-full-manual.dto';
 import { Section } from './entities/section.entity';
 import { Subsection } from './entities/subsection.entity';
 import { Block } from './entities/block.entity';
+import { BlockType } from './enums/block-type.enum';
 
 @Injectable()
 export class ManualService {

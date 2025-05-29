@@ -5,6 +5,7 @@ export class CreateSectionDto {
   @IsString()
   title: string;
 
-  @IsUUID()
+  @IsUUID('4')
+  @IsNotEmpty()
   manualId: string;
 }

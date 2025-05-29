@@ -1,22 +1,41 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
+  Entity,
   ManyToOne,
   OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Section } from './section.entity';
 import { Block } from './block.entity';
+import { Section } from './section.entity';
 
 @Entity('subsections')
 export class Subsection {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({
+    name: 'title',
+    type: 'varchar',
+    length: 255,
+    comment: 'Título de la subsección del manual',
+    unique: true,
+    transformer: {
+      to: (value: string) => value.trim(),
+      from: (value: string) => value.trim(),
+    },
+  })
   title: string;
 
-  @Column()
+  @Column({
+    name: 'order',
+    type: 'text',
+    nullable: true,
+    comment: 'Orden de la subsección del manual',
+    transformer: {
+      to: (value: string) => value?.trim(),
+      from: (value: string) => value?.trim(),
+    },
+  })
   order: number;
 
   @ManyToOne(() => Section, (section) => section.subsections, {
@@ -29,4 +48,30 @@ export class Subsection {
     onDelete: 'CASCADE',
   })
   blocks: Block[];
+
+  @Column({
+    name: 'created_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    comment: 'Fecha de creación de la subsección',
+  })
+  createdAt: Date;
+
+  @Column({
+    name: 'updated_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+    comment: 'Fecha de última actualización de la subsección',
+  })
+  updatedAt: Date;
+
+  @Column({
+    name: 'deleted_at',
+    type: 'timestamp',
+    nullable: true,
+    default: null,
+    comment: 'Fecha de eliminación de la subsección',
+  })
+  deletedAt: Date | null;
 }

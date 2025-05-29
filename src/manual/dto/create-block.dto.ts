@@ -1,15 +1,21 @@
-import { IsEnum, IsNotEmpty, IsString, IsUUID, IsInt } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { BlockType } from '../enums/block-type.enum';
 
 export class CreateBlockDto {
-  @IsEnum(['text', 'video'])
-  type: 'text' | 'video';
+  @IsEnum(BlockType)
+  @IsNotEmpty()
+  type: BlockType;
 
   @IsString()
+  @IsNotEmpty()
   content: string;
 
   @IsInt()
+  @IsNotEmpty()
   order: number;
 
-  @IsUUID()
+  @IsString()
+  @IsUUID('4')
+  @IsNotEmpty()
   subsectionId: string;
 }
