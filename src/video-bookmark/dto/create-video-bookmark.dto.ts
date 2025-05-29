@@ -5,7 +5,7 @@ import {
   IsNotEmpty,
   IsEnum,
 } from 'class-validator';
-import { BookmarkType } from '../../common/enums/video-interaction.enums';
+import { BookmarkType } from '../enum/bookmark-type.enum';
 
 export class CreateVideoBookmarkDto {
   @IsUUID()

@@ -1,4 +1,4 @@
-import { VideoInteractionType } from '../../common/enums/video-interaction-type.enum';
+import { VideoInteractionType } from '../enum/video-interaction.enums';
 
 export class UpdateVideoInteractionDto {
   type?: VideoInteractionType;

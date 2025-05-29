@@ -6,8 +6,8 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import { BookmarkType } from '../../common/enums/video-interaction.enums';
 import { Video } from '../../video/entities/video.entity';
+import { BookmarkType } from '../enum/bookmark-type.enum';
 
 @Entity('video_bookmarks')
 export class VideoBookmark {
