@@ -1,10 +1,12 @@
-import { IsString, IsUUID, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 export class CreateVideoReportDto {
   @IsUUID()
+  @IsNotEmpty()
   userId: string;
 
   @IsUUID()
+  @IsNotEmpty()
   videoId: string;
 
   @IsString()

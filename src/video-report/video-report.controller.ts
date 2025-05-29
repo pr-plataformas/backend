@@ -1,14 +1,14 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
+  Controller,
+  Delete,
+  Get,
   Param,
   Patch,
-  Delete,
+  Post,
 } from '@nestjs/common';
-import { VideoReportService } from './video-report.service';
 import { CreateVideoReportDto } from './dto/create-video-report.dto';
+import { VideoReportService } from './video-report.service';
 
 @Controller('video-reports')
 export class VideoReportController {
