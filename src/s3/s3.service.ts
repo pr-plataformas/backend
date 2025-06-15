@@ -9,26 +9,16 @@ import {
 } from '@aws-sdk/client-s3';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import config from 'src/config/config';
+import config from '../config/config';
 
 @Injectable()
 export class S3Service {
-  private s3Client: S3Client;
-  private bucketName: string;
-
   constructor(
     @Inject(config.KEY)
     private readonly configService: ConfigType<typeof config>,
-  ) {
-    this.s3Client = new S3Client({
-      region: this.configService.aws.region,
-      credentials: {
-        accessKeyId: this.configService.aws.accessKeyId,
-        secretAccessKey: this.configService.aws.secretAccessKey,
-      },
-    });
-    this.bucketName = this.configService.aws.s3.bucketName;
-  }
+    @Inject('S3_CLIENT')
+    private readonly s3Client: S3Client,
+  ) {}
 
   // Método para subir archivos pequeños (< 5MB)
   async uploadFile(
@@ -37,7 +27,7 @@ export class S3Service {
     contentType: string,
   ): Promise<string> {
     const command = new PutObjectCommand({
-      Bucket: this.bucketName,
+      Bucket: this.configService.aws.s3.bucketName,
       Key: key,
       Body: file,
       ContentType: contentType,
@@ -57,7 +47,7 @@ export class S3Service {
     try {
       // Iniciar multipart upload
       const createCommand = new CreateMultipartUploadCommand({
-        Bucket: this.bucketName,
+        Bucket: this.configService.aws.s3.bucketName,
         Key: key,
         ContentType: contentType,
       });
@@ -78,7 +68,7 @@ export class S3Service {
         const partBuffer = file.slice(start, end);
 
         const uploadPartCommand = new UploadPartCommand({
-          Bucket: this.bucketName,
+          Bucket: this.configService.aws.s3.bucketName,
           Key: key,
           UploadId,
           Body: partBuffer,
@@ -91,7 +81,7 @@ export class S3Service {
 
       // Completar multipart upload
       const completeCommand = new CompleteMultipartUploadCommand({
-        Bucket: this.bucketName,
+        Bucket: this.configService.aws.s3.bucketName,
         Key: key,
         UploadId,
         MultipartUpload: { Parts: parts },
@@ -107,7 +97,7 @@ export class S3Service {
 
   async getFile(key: string): Promise<Buffer> {
     const command = new GetObjectCommand({
-      Bucket: this.bucketName,
+      Bucket: this.configService.aws.s3.bucketName,
       Key: key,
     });
 
@@ -123,7 +113,7 @@ export class S3Service {
 
   async deleteFile(key: string): Promise<void> {
     const command = new DeleteObjectCommand({
-      Bucket: this.bucketName,
+      Bucket: this.configService.aws.s3.bucketName,
       Key: key,
     });
 
@@ -131,14 +121,14 @@ export class S3Service {
   }
 
   getFileUrl(key: string): string {
-    return `https://${this.bucketName}.s3.${this.configService.aws.region}.amazonaws.com/${key}`;
+    return `https://${this.configService.aws.s3.bucketName}.s3.${this.configService.aws.region}.amazonaws.com/${key}`;
   }
 
   // Método para generar URL firmada con tiempo de expiración
   async getSignedUrl(key: string, expiresIn = 3600): Promise<string> {
     const { getSignedUrl } = await import('@aws-sdk/s3-request-presigner');
     const command = new GetObjectCommand({
-      Bucket: this.bucketName,
+      Bucket: this.configService.aws.s3.bucketName,
       Key: key,
     });
 
