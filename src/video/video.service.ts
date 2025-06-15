@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
@@ -58,7 +62,16 @@ export class VideoService {
   }
 
   async findAll() {
-    return this.videoRepository.find();
+    try {
+      const videos = await this.videoRepository.find();
+      if (videos.length === 0) {
+        throw new NotFoundException('No videos found');
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error retrieving videos from the database',
+      );
+    }
   }
 
   async findOne(id: string) {

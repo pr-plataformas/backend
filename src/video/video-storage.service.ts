@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { S3Service } from 'src/common/services/s3/s3.service';
+import { S3Service } from '../s3/s3.service';
 
 @Injectable()
 export class VideoStorageService {
