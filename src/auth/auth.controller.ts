@@ -17,9 +17,9 @@ export class AuthController {
 
   @UseGuards(FirebaseAuthGuard)
   @ApiBearerAuth()
-  @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiResponse({ status: 200, description: 'Login exitoso.' })
+  @Post('login')
   async login(@Req() req) {
     // El guard ya validó el token y el dominio, y adjuntó decodedToken
     const decodedToken = req.firebaseDecoded;

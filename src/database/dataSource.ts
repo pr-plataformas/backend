@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-import { VideoBookmark } from 'src/video-bookmark/entities/video-bookmark.entity';
+import { VideoBookmark } from '../video-bookmark/entities/video-bookmark.entity';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { Block } from '../manual/entities/block.entity';
 import { Manual } from '../manual/entities/manual.entity';
@@ -21,8 +21,6 @@ export const dataSourceOptions: DataSourceOptions = {
   password: 'postgres',
   database: 'clinic_hub_db',
   logging: true,
-  synchronize: true,
-  migrationsRun: true,
   migrations: ['src/database/migrations/*.ts'],
   migrationsTableName: 'migrations',
   entities: [
