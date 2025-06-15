@@ -4,6 +4,8 @@ import {
   ManyToOne,
   Column,
   CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Video } from '../../video/entities/video.entity';
@@ -27,8 +29,28 @@ export class VideoInteraction {
   type: VideoInteractionType;
 
   @CreateDateColumn({
+    name: 'created_at',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
+    comment: 'Fecha de creación del usuario',
   })
   createdAt: Date;
+
+  @UpdateDateColumn({
+    name: 'updated_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+    comment: 'Fecha de última actualización del usuario',
+  })
+  updatedAt: Date;
+
+  @DeleteDateColumn({
+    name: 'deleted_at',
+    type: 'timestamp',
+    nullable: true,
+    default: null,
+    comment: 'Fecha de eliminación del usuario',
+  })
+  deletedAt: Date;
 }
