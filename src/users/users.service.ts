@@ -49,9 +49,7 @@ export class UsersService {
 
   async findByEmail(email: string): Promise<User> {
     try {
-      const user = await this.usersRepository.findOne({ where: { email } });
-      if (!user) throw new NotFoundException('Usuario no encontrado');
-      return user;
+      return await this.usersRepository.findOne({ where: { email } });
     } catch (error) {
       throw new InternalServerErrorException(
         'Error al buscar el usuario por email.',

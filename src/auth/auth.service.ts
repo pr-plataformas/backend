@@ -50,6 +50,28 @@ export class AuthService {
     }
   }
 
+  // Login: valida Google, busca/crea usuario y genera tokens
+  async loginWithGoogleToken(googlePayload: any): Promise<LoginResponseDto> {
+    try {
+      let user = await this.usersService.findByEmail(googlePayload.email);
+      if (!user) {
+        user = await this.registerUser({
+          email: googlePayload.email,
+          name: googlePayload.name || googlePayload.email,
+        } as any);
+      }
+      const payload = this.buildJwtPayload(user);
+      const accessToken = await this.jwtService.generateAccessToken(payload);
+      const refreshToken = await this.jwtService.generateRefreshToken(payload);
+      return { user, accessToken, refreshToken };
+    } catch (error) {
+      console.log('Error en login con Google:', error);
+      throw new UnauthorizedException(
+        'Token de Google inválido o usuario no válido.',
+      );
+    }
+  }
+
   // Refresh: valida refreshToken, rota y genera nuevo accessToken y refreshToken
   async refreshToken(refreshToken: string): Promise<RefreshResponseDto> {
     try {

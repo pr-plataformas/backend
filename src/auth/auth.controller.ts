@@ -9,6 +9,7 @@ import {
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { FirebaseAuthGuard } from './firebase-auth.guard';
+import { GoogleAuthGuard } from './google-auth.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -45,6 +46,43 @@ export class AuthController {
       await this.authService.refreshToken(refreshToken);
     return {
       message: 'Token refrescado',
+      status: 200,
+      data: {
+        user,
+        accessToken,
+      },
+    };
+  }
+
+  @UseGuards(GoogleAuthGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({ status: 200, description: 'Login Google exitoso.' })
+  @Post('login-google')
+  async loginGoogle(@Req() req) {
+    const decodedToken = req.googleDecoded;
+    const { user, accessToken, refreshToken } =
+      await this.authService.loginWithGoogleToken(decodedToken);
+    return {
+      message: 'Login Google exitoso',
+      status: 200,
+      data: {
+        user,
+        accessToken,
+        refreshToken,
+      },
+    };
+  }
+
+  @Post('refresh-google')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({ status: 200, description: 'Token Google refrescado.' })
+  async refreshGoogle(@Req() req) {
+    const { refreshToken } = req.body;
+    const { accessToken, user } =
+      await this.authService.refreshToken(refreshToken);
+    return {
+      message: 'Token Google refrescado',
       status: 200,
       data: {
         user,

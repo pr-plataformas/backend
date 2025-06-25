@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '../jwt/jwt.service';
 import { UserRole } from '../common/enums/user-role.enum';
+import { UnauthorizedException } from '@nestjs/common';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -32,6 +33,7 @@ describe('AuthService', () => {
       generateAccessToken: jest.fn(),
       generateRefreshToken: jest.fn(),
       verifyAsync: jest.fn(),
+      configService: { jwt: { refreshSecret: 'secret' } },
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -109,7 +111,44 @@ describe('AuthService', () => {
       usersService.findByEmail.mockRejectedValue(new Error('fail'));
       await expect(
         service.loginWithFirebaseToken(mockDecodedToken as any),
-      ).rejects.toThrow();
+      ).rejects.toThrow(UnauthorizedException);
+    });
+  });
+
+  describe('loginWithGoogleToken', () => {
+    const googlePayload = {
+      email: 'test@alumnos.ucn.cl',
+      name: 'Test User',
+    };
+
+    it('should login and return tokens and user', async () => {
+      usersService.findByEmail.mockResolvedValue(mockUser);
+      jwtService.generateAccessToken.mockResolvedValue('access-token');
+      jwtService.generateRefreshToken.mockResolvedValue('refresh-token');
+      const result = await service.loginWithGoogleToken(googlePayload as any);
+      expect(usersService.findByEmail).toHaveBeenCalledWith(
+        googlePayload.email,
+      );
+      expect(result).toHaveProperty('user');
+      expect(result).toHaveProperty('accessToken', 'access-token');
+      expect(result).toHaveProperty('refreshToken', 'refresh-token');
+    });
+
+    it('should register user if not found', async () => {
+      usersService.findByEmail.mockResolvedValue(null);
+      usersService.createUser.mockResolvedValue(mockUser);
+      jwtService.generateAccessToken.mockResolvedValue('access-token');
+      jwtService.generateRefreshToken.mockResolvedValue('refresh-token');
+      const result = await service.loginWithGoogleToken(googlePayload as any);
+      expect(usersService.createUser).toHaveBeenCalled();
+      expect(result.user).toEqual(mockUser);
+    });
+
+    it('should throw UnauthorizedException on error', async () => {
+      usersService.findByEmail.mockRejectedValue(new Error('fail'));
+      await expect(
+        service.loginWithGoogleToken(googlePayload as any),
+      ).rejects.toThrow(UnauthorizedException);
     });
   });
 
@@ -130,12 +169,16 @@ describe('AuthService', () => {
     it('should throw UnauthorizedException if user not found', async () => {
       jwtService.verifyAsync.mockResolvedValue({ sub: 'notfound' });
       usersService.findById.mockResolvedValue(null);
-      await expect(service.refreshToken('refresh-token')).rejects.toThrow();
+      await expect(service.refreshToken('refresh-token')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should throw UnauthorizedException on error', async () => {
       jwtService.verifyAsync.mockRejectedValue(new Error('fail'));
-      await expect(service.refreshToken('refresh-token')).rejects.toThrow();
+      await expect(service.refreshToken('refresh-token')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 

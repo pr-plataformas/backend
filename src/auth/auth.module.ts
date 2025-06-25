@@ -6,11 +6,12 @@ import { FirebaseModule } from '../firebase/firebase.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from '../jwt/jwt.module';
+import { GoogleAuthGuard } from './google-auth.guard';
 
 @Module({
   imports: [UsersModule, FirebaseModule, JwtModule],
-  providers: [FirebaseAuthGuard, RolesGuard, AuthService],
+  providers: [FirebaseAuthGuard, RolesGuard, AuthService, GoogleAuthGuard],
   controllers: [AuthController],
-  exports: [FirebaseAuthGuard, RolesGuard],
+  exports: [FirebaseAuthGuard, RolesGuard, GoogleAuthGuard],
 })
 export class AuthModule {}
