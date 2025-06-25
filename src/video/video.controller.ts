@@ -4,6 +4,7 @@ import {
   Delete,
   FileTypeValidator,
   Get,
+  Headers,
   HttpStatus,
   MaxFileSizeValidator,
   Param,
@@ -91,17 +92,27 @@ export class VideoController {
   }
 
   @Get(':id/stream')
-  async streamVideo(@Param('id') id: string, @Res() res: Response) {
-    const videoData = await this.videoService.getVideoStream(id);
+  async streamVideo(
+    @Param('id') id: string,
+    @Headers('range') range?: string,
+    @Res() res?: Response,
+  ) {
+    const { stream, contentLength, contentRange, contentType, statusCode } =
+      await this.videoService.getVideoStream(id, range);
 
-    // Configurar cabeceras para streaming
+    res.status(statusCode);
     res.set({
-      'Content-Type': videoData.contentType,
-      'Content-Disposition': 'inline',
+      'Content-Type': contentType,
+      'Content-Length': contentLength.toString(),
       'Accept-Ranges': 'bytes',
+      'Cache-Control': 'no-cache',
     });
 
-    res.send(videoData.buffer);
+    if (contentRange) {
+      res.set('Content-Range', contentRange);
+    }
+
+    stream.pipe(res);
   }
 
   @Patch(':id')
