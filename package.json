@@ -101,6 +101,22 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
+    "coveragePathIgnorePatterns": [
+      "node_modules",
+      "src/main.ts",
+      "src/app.module.ts",
+      "src/config",
+      "src/database",
+      "src/migrations",
+      "src/.*/dto/",
+      "src/.*/entities/",
+      "src/.*/enums/",
+      "src/.*/constants/",
+      "src/.*/filters/",
+      "src/.*/interceptors/",
+      "src/.*/*.module.ts",
+      "src/.*/*.decorator.ts"
+    ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   }

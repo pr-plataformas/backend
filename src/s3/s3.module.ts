@@ -22,6 +22,6 @@ import config from '../config/config';
       inject: [config.KEY],
     },
   ],
-  exports: [S3Service],
+  exports: [S3Service, 'S3_CLIENT'],
 })
 export class S3Module {}
