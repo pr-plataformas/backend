@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { FirebaseAuthGuard } from './firebase-auth.guard';
-import { GoogleAuthGuard } from './google-auth.guard';
+import { FirebaseAuthGuard } from './guards/firebase-auth.guard';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
 
 @ApiTags('auth')
 @Controller('auth')

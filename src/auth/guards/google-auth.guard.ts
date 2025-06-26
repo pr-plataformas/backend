@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { OAuth2Client } from 'google-auth-library';
-import { UCN_EMAIL_REGEX } from '../common/constants/ucn-email.regex';
+import { UCN_EMAIL_REGEX } from '../../common/constants/ucn-email.regex';
 
 const ucnRegex = UCN_EMAIL_REGEX;
 

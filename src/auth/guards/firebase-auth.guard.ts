@@ -6,8 +6,8 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UCN_EMAIL_REGEX } from '../common/constants/ucn-email.regex';
-import { FirebaseService } from '../firebase/firebase.service';
+import { UCN_EMAIL_REGEX } from '../../common/constants/ucn-email.regex';
+import { FirebaseService } from '../../firebase/firebase.service';
 
 const ucnRegex = UCN_EMAIL_REGEX;
 
