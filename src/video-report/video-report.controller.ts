@@ -6,10 +6,13 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateVideoReportDto } from './dto/create-video-report.dto';
 import { VideoReportService } from './video-report.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('video-reports')
 export class VideoReportController {
   constructor(private readonly videoReportService: VideoReportService) {}

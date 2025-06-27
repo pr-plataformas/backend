@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Video } from '../../video/entities/video.entity';
@@ -16,10 +17,12 @@ export class VideoInteraction {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Video)
+  @ManyToOne(() => Video, { nullable: false, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'video_id' })
   video: Video;
 
   @Column({

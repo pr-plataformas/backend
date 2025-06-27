@@ -13,6 +13,7 @@ import {
   Post,
   Res,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -21,9 +22,11 @@ import { Response } from 'express';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
 import { VideoService } from './video.service';
-import { S3Service } from 'src/s3/s3.service';
+import { S3Service } from '../s3/s3.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('videos')
+@UseGuards(JwtAuthGuard)
 @Controller('videos')
 export class VideoController {
   constructor(

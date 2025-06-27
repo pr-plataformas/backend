@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ManualService } from './manual.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Manual } from './entities/manual.entity';
+import { Manual } from '../entities/manual.entity';
 
 describe('ManualService', () => {
   let service: ManualService;

@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   ManyToOne,
-  JoinColumn
+  JoinColumn,
 } from 'typeorm';
 import { Category } from '../../category/entities/category.entity';
 
@@ -36,7 +36,12 @@ export class Video {
   @JoinColumn({ name: 'category_id' })
   category?: Category;
 
-  @Column({ name: 'category_id', type: 'uuid', nullable: true, comment: 'ID de la categoría asociada' })
+  @Column({
+    name: 'category_id',
+    type: 'uuid',
+    nullable: true,
+    comment: 'ID de la categoría asociada',
+  })
   categoryId?: string;
 
   @Column({

@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Block } from './entities/block.entity';
-import { Subsection } from './entities/subsection.entity';
-import { CreateBlockDto } from './dto/create-block.dto';
-import { ReorderBlocksDto } from './dto/reorder-blocks.dto';
+import { Block } from '../entities/block.entity';
+import { Subsection } from '../entities/subsection.entity';
+import { CreateBlockDto } from '../dto/create-block.dto';
+import { ReorderBlocksDto } from '../dto/reorder-blocks.dto';
 
 @Injectable()
 export class BlockService {

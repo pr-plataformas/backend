@@ -1,17 +1,20 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
+  Controller,
+  Delete,
+  Get,
   Param,
   Patch,
-  Delete,
+  Post,
+  UseGuards,
 } from '@nestjs/common';
-import { VideoBookmarkService } from './video-bookmark.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateVideoBookmarkDto } from './dto/create-video-bookmark.dto';
 import { UpdateVideoBookmarkDto } from './dto/update-video-bookmark.dto';
+import { VideoBookmarkService } from './video-bookmark.service';
 
 @Controller('video-bookmarks')
+@UseGuards(JwtAuthGuard)
 export class VideoBookmarkController {
   constructor(private readonly service: VideoBookmarkService) {}
 

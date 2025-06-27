@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BlockService } from './block.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Block } from './entities/block.entity';
-import { Subsection } from './entities/subsection.entity';
+import { Block } from '../entities/block.entity';
+import { Subsection } from '../entities/subsection.entity';
 
 describe('BlockService', () => {
   let service: BlockService;

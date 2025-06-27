@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Manual } from './entities/manual.entity';
-import { CreateManualDto } from './dto/create-manual.dto';
-import { CreateFullManualDto } from './dto/create-full-manual.dto';
-import { Section } from './entities/section.entity';
-import { Subsection } from './entities/subsection.entity';
-import { Block } from './entities/block.entity';
-import { BlockType } from './enums/block-type.enum';
+import { Manual } from '../entities/manual.entity';
+import { CreateManualDto } from '../dto/create-manual.dto';
+import { CreateFullManualDto } from '../dto/create-full-manual.dto';
+import { Section } from '../entities/section.entity';
+import { Subsection } from '../entities/subsection.entity';
+import { Block } from '../entities/block.entity';
+import { BlockType } from '../enums/block-type.enum';
 
 @Injectable()
 export class ManualService {
@@ -32,7 +32,7 @@ export class ManualService {
     });
   }
 
-  async findOneManual(id: string) {
+  async findOne(id: string) {
     return this.manualRepo.findOne({
       where: { id },
       relations: {

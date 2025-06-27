@@ -1,19 +1,22 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
   Param,
   Patch,
-  Delete,
-  HttpStatus,
+  Post,
+  UseGuards,
 } from '@nestjs/common';
-import { VideoInteractionService } from './video-interaction.service';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateVideoInteractionDto } from './dto/create-video-interaction.dto';
 import { UpdateVideoInteractionDto } from './dto/update-video-interaction.dto';
-import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { VideoInteractionService } from './video-interaction.service';
 
 @ApiTags('video-interactions')
+@UseGuards(JwtAuthGuard)
 @Controller('video-interactions')
 export class VideoInteractionController {
   constructor(private readonly service: VideoInteractionService) {}
@@ -26,13 +29,13 @@ export class VideoInteractionController {
       const data = await this.service.create(createDto);
       return {
         message: 'Interacción de video creada',
-        status: HttpStatus.CREATED,
+        statusCode: HttpStatus.CREATED,
         data,
       };
     } catch (error) {
       return {
         message: error.message || 'Error al crear la interacción de video',
-        status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
         data: null,
       };
     }
@@ -40,19 +43,22 @@ export class VideoInteractionController {
 
   @Get()
   @ApiOperation({ summary: 'Listar interacciones de video' })
-  @ApiResponse({ status: 200, description: 'Lista de interacciones de video.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de interacciones de video.',
+  })
   async findAll() {
     try {
       const data = await this.service.findAll();
       return {
         message: 'Lista de interacciones de video',
-        status: HttpStatus.OK,
+        statusCode: HttpStatus.OK,
         data,
       };
     } catch (error) {
       return {
         message: error.message || 'Error al listar interacciones de video',
-        status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
         data: null,
       };
     }
@@ -60,19 +66,22 @@ export class VideoInteractionController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Obtener interacción de video por id' })
-  @ApiResponse({ status: 200, description: 'Interacción de video encontrada.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Interacción de video encontrada.',
+  })
   async findOne(@Param('id') id: string) {
     try {
       const data = await this.service.findOne(id);
       return {
         message: 'Interacción de video encontrada',
-        status: HttpStatus.OK,
+        statusCode: HttpStatus.OK,
         data,
       };
     } catch (error) {
       return {
         message: error.message || 'Error al buscar la interacción de video',
-        status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
         data: null,
       };
     }
@@ -92,13 +101,13 @@ export class VideoInteractionController {
       const data = await this.service.update(id, updateDto);
       return {
         message: 'Interacción de video actualizada',
-        status: HttpStatus.OK,
+        statusCode: HttpStatus.OK,
         data,
       };
     } catch (error) {
       return {
         message: error.message || 'Error al actualizar la interacción de video',
-        status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
         data: null,
       };
     }
@@ -106,19 +115,22 @@ export class VideoInteractionController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar interacción de video' })
-  @ApiResponse({ status: 200, description: 'Interacción de video eliminada.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Interacción de video eliminada.',
+  })
   async remove(@Param('id') id: string) {
     try {
       const data = await this.service.remove(id);
       return {
         message: 'Interacción de video eliminada',
-        status: HttpStatus.OK,
+        statusCode: HttpStatus.OK,
         data,
       };
     } catch (error) {
       return {
         message: error.message || 'Error al eliminar la interacción de video',
-        status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
         data: null,
       };
     }

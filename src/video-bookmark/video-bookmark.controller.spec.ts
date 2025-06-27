@@ -1,4 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { UserRole } from '../common/enums/user-role.enum';
+import { CreateVideoBookmarkDto } from './dto/create-video-bookmark.dto';
+import { VideoBookmark } from './entities/video-bookmark.entity';
+import { BookmarkType } from './enum/bookmark-type.enum';
 import { VideoBookmarkController } from './video-bookmark.controller';
 import { VideoBookmarkService } from './video-bookmark.service';
 
@@ -6,7 +10,46 @@ describe('VideoBookmarkController', () => {
   let controller: VideoBookmarkController;
   let service: any;
 
-  const mockBookmark = { id: '1', note: 'Test' };
+  const mockCreateBookmark: CreateVideoBookmarkDto = {
+    videoId: 'video-123',
+    userId: 'user-123',
+    note: 'Test bookmark',
+    bookmarkType: BookmarkType.CUSTOM,
+    position: 120,
+  };
+
+  const mockBookmark: VideoBookmark = {
+    id: '1',
+    deletedAt: null,
+    video: {
+      id: 'video1',
+      title: 'Test Video',
+      description: 'This is a test video',
+      fileUrl: 'http://example.com/video1',
+      contentType: 'video/mp4',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+      fileKey: 'video1.mp4',
+      fileSize: 1024,
+      uploadDuration: 60,
+      category: { id: 'cat1', name: 'Test Category', videos: [] },
+    },
+    user: {
+      id: 'user1',
+      fullName: 'Test User',
+      email: 'correo@correo.com',
+      role: UserRole.ESTUDIANTE,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+    },
+    note: 'Test bookmark',
+    bookmarkType: BookmarkType.CUSTOM,
+    position: 120,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
 
   beforeEach(async () => {
     service = {
@@ -29,8 +72,8 @@ describe('VideoBookmarkController', () => {
   });
 
   it('should create bookmark', async () => {
-    service.create.mockResolvedValue(mockBookmark);
-    const result = await controller.create({ note: 'Test' });
+    service.create.mockResolvedValue(mockCreateBookmark);
+    const result = await controller.create(mockCreateBookmark);
     expect(result).toEqual(mockBookmark);
   });
 

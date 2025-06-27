@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Section } from './entities/section.entity';
-import { Manual } from './entities/manual.entity';
-import { CreateSectionDto } from './dto/create-section.dto';
-import { ReorderSectionsDto } from './dto/reorder-sections.dto';
+import { Section } from '../entities/section.entity';
+import { Manual } from '../entities/manual.entity';
+import { CreateSectionDto } from '../dto/create-section.dto';
+import { ReorderSectionsDto } from '../dto/reorder-sections.dto';
 
 @Injectable()
 export class SectionService {

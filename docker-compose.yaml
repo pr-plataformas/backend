@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   clinic_hub_db:
     image: postgres:latest
@@ -9,40 +10,60 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - ./postgres_data:/data/db
+      - ./postgres_data:/var/lib/postgresql/data
 
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: root@admin.com
-      PGADMIN_DEFAULT_PASSWORD: root
-    ports:
-      - '5051:80'
-    volumes:
-      - ./pgadmin_data:/var/lib/pgadmin
-    deploy:
-      resources:
-        limits:
-          cpus: '0.25'
-          memory: 256M
   clinic_hub_api:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: soportevideoteca/clinic_hub_api:latest
     container_name: clinic_hub_api
-    env_file:
-      - .env.prod
     environment:
-      - NODE_ENV=production
+      APP_PORT: 9999
+      POSTGRES_HOST: clinic_hub_db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: clinic_hub_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      ACCESS_JWT_SECRET: qnVZHuGCRoNMJLO7rHoPAI6qh3qgoWRVKXYhosVQxXg=
+      REFRESH_JWT_SECRET: JffJJJixOEEuP/W4kSNMmQMDFJ7nd1ao9AQhu1uGYf5E=
+      ACCESS_EXPIRES_IN: 60s
+      REFRESH_EXPIRES_IN: 5d
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: AKIAZDCKH7RQ3KCVMGNG
+      AWS_SECRET_ACCESS_KEY: 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
+      AWS_S3_BUCKET_NAME: videoteca-test
+      FIREBASE_PROJECT_ID: videoteca-enfermeria
+      FIREBASE_PRIVATE_KEY: |
+        -----BEGIN PRIVATE KEY-----
+        MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCmHFaKnbK4i+7L
+        sEpWIb0VAq2qFNtS0r1OmMFL7KsGmJUPosMAsj0nWrH3+TMQL9gnh32+7kyozEE4
+        hQfBNKkyivHjsR10XRcngJtMRaSeWV2YFvukbw6tq2uM+g0afVXeY8q3cIYoU9lt
+        PoVbtYRjKqOc/FgGVpr+2rs1nxoAiCNrB/ndO9U/hordnAeqYWf+gGYAn+AWezC9
+        qvmKKSTUbhbgb5UyZ9Ddf0JQ9W6Oz8EoiyewsuyeRjqyjju3PHV/8QfXXnYjXm9a
+        m1QHuwGWjLHdsdR1duLw6OFYWdIDAq6bnpdz9s2retHGlspaZn/MOsKnKCPL5bZ2
+        lnx9Ml2xAgMBAAECggEADgIrCrTWpQFZDbiz5ixheKeBi4vHfMY8tIeFmqBugmeE
+        /5zxbso5Rcu8YT4U8DcmtpuyrzLDyIL0N57haunk4HgvAs2VnzH4EUrjXeTsJ3YA
+        IoLCrUj33w3LK8gNKZgbER6PkpWE3NsIZbH9d2DZFa9bfbJavosYdmhuHA0rOVLe
+        4UlVQItk8X5yrWrC0A01P/JG/YmID+fgH19TM2SPKjdl1RDGFzx1bq/er+zqG23B
+        q0XTCJrgVwtgsWynj/qYy9DN1NDjTWN93tk2EqkwuA5kVyW1H8py8X/5mMtKgAJ7
+        x2jIuwwe7RRBPn1uqeMGrgU5Rt8XCksGfG+U7r37OQKBgQDijjCjQbqQbyDRpCKJ
+        KoW9h/SsrLZulHP5O8SsJp9R4i2QG8YQxtW4NUB0kY+RIoA7d+B76RYqRe344d5q
+        jBmxQZlo05PYNIf7DsCe7DcOESJXx50sygtY2EBibROXhQoR22cE6l8x7hSBgrzC
+        044Pep1LotI3SlTNW54zIb3r+QKBgQC7sxGeGFh3z5AXgHMtpYI+kqkGEd2XuV7w
+        KhwlF7mfZ0wt4i4O2CzXOApmQc4AGaeZa7KkHgBtyw+0XaGgbEssTbFCXANx7Drv
+        +cvUwVHlvcrQ9mPw0y/8QI3ndGJWG4VGoZXsfEVRYHaqpT208rg+blNqcs6fvk4E
+        w/TNJK+9eQKBgQC9/eBsCMMcPRWYubz8qtxdhZZ6+JxFP9nCOY1FkV4qnTL4l1IS
+        36x7Pq0/FJMBc512QaHQSDh+WwamoUSUtckWDZ1Je6WQuv0OXeDLZe0FrvjOBGib
+        FxVM/I2B/VdgygEX2JccWDBc/vvTYIBMIn4QHROsSm9gTsWvMhYJa1KKgQKBgBP3
+        zNwAwwib8DxP0fD9NonpmEmpBOXrNopeMHhRudGXb6dB9Jxnqv2KXLDcN0oTcJ0F
+        tA95kZocjCMoAtXKL4UbDsx8dXFdLDfzXxfXKRtDwZvRWnh4Pxaa133UB9IZQ2hs
+        MELkRYuOs5Eb2yCw4aDio8UjSY/88tfW8OgSCxAhAoGAV2UaVLANo4RtqB6LloiN
+        Fv+d/B7/uiTMXdVUcepaSZEXQQCFy+uNIQkxewVRLsPtX01AT9jydPB8Zb1Ng8NK
+        kWJj38b9ejP3bNkGAK+bXNLWqEzOfe39CkYJVNHUk2EHmwjGNyJ5nre60YrBhdvW
+        1nUz5J/dLMMorUSKMUemfJQ=
+        -----END PRIVATE KEY-----
+      FIREBASE_CLIENT_EMAIL: firebase-adminsdk-fbsvc@videoteca-enfermeria.iam.gserviceaccount.com
+      GOOGLE_CLIENT_ID: 27567582386-ncjj22e5fldb8ei7qtb9ph9qom4vodkt.apps.googleusercontent.com
     ports:
       - '9999:9999'
     depends_on:
       - clinic_hub_db
-    volumes:
-      - .:/app
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
+    restart: unless-stopped

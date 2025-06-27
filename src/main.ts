@@ -14,7 +14,6 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { TimeoutInterceptor } from './common/interceptors/time-out.interceptor';
 import config from './config/config';
-import { getMetadataArgsStorage } from 'typeorm';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bodyParser: true });
@@ -47,20 +46,20 @@ async function bootstrap() {
   app.use(compression());
 
   // Limita cada IP a 100 solicitudes por ventana de 15 minutos
-  // app.use(
-  //   rateLimit({
-  //     windowMs: 15 * 60 * 1000, // 15 minutos
-  //     max: 100,
-  //   }),
-  // );
+  app.use(
+    rateLimit({
+      windowMs: 15 * 60 * 1000, // 15 minutos
+      max: 100,
+    }),
+  );
 
   // Extend timeout for file uploads
-  // app.use((req, res, next) => {
-  //   if (req.url?.includes('/videos/upload')) {
-  //     res.setTimeout(300000); // 5 minutes
-  //   }
-  //   next();
-  // });
+  app.use((req, res, next) => {
+    if (req.url?.includes('/videos/upload')) {
+      res.setTimeout(300000); // 5 minutes
+    }
+    next();
+  });
 
   // Protección contra ataques XSS
   app.use((req, res, next) => {
@@ -116,8 +115,6 @@ async function bootstrap() {
   logger.log(
     `${process.env.NODE_ENV === 'production' ? 'Production' : 'Development'} enviroment started successfully`,
   );
-  console.log('Entidades detectadas por TypeORM:');
-  console.log(getMetadataArgsStorage().tables.map((t) => t.name));
 }
 
 bootstrap();
