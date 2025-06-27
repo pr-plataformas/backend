@@ -21,11 +21,15 @@ import { Response } from 'express';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
 import { VideoService } from './video.service';
+import { S3Service } from 'src/s3/s3.service';
 
 @ApiTags('videos')
 @Controller('videos')
 export class VideoController {
-  constructor(private readonly videoService: VideoService) {}
+  constructor(
+    private readonly videoService: VideoService,
+    private readonly s3Service: S3Service,
+  ) {}
 
   @Post('upload')
   @UseInterceptors(
@@ -79,6 +83,25 @@ export class VideoController {
     return {
       statusCode: HttpStatus.OK,
       data: videos,
+    };
+  }
+
+  @Get('bucket-list')
+  async listBucketVideos() {
+    const files = await this.s3Service.listVideos();
+    return {
+      statusCode: 200,
+      data: files,
+    };
+  }
+
+  @Get('bucket-list-urls')
+  async listBucketVideoUrls() {
+    const keys = await this.s3Service.listVideos();
+    const urls = keys.map((key) => this.s3Service.getFileUrl(key));
+    return {
+      statusCode: 200,
+      data: urls,
     };
   }
 

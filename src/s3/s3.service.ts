@@ -3,6 +3,7 @@ import {
   CreateMultipartUploadCommand,
   DeleteObjectCommand,
   GetObjectCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
   UploadPartCommand,
@@ -133,5 +134,14 @@ export class S3Service {
     });
 
     return getSignedUrl(this.s3Client, command, { expiresIn });
+  }
+
+  async listVideos(): Promise<string[]> {
+    const command = new ListObjectsV2Command({
+      Bucket: this.configService.aws.s3.bucketName,
+      Prefix: 'videos/',
+    });
+    const response = await this.s3Client.send(command);
+    return response.Contents?.map((item) => item.Key) ?? [];
   }
 }

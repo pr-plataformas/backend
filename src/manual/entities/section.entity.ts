@@ -19,10 +19,6 @@ export class Section {
     length: 255,
     comment: 'Título de la sección del manual',
     unique: true,
-    transformer: {
-      to: (value: string) => value.trim(),
-      from: (value: string) => value.trim(),
-    },
   })
   title: string;
 

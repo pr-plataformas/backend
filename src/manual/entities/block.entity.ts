@@ -19,10 +19,6 @@ export class Block {
     enum: BlockType,
     default: BlockType.TEXT,
     comment: 'Tipo de bloque del manual',
-    transformer: {
-      to: (value: BlockType) => value,
-      from: (value: BlockType) => value,
-    },
   })
   type: BlockType;
 
@@ -30,10 +26,6 @@ export class Block {
     name: 'content',
     type: 'text',
     comment: 'Contenido del bloque del manual',
-    transformer: {
-      to: (value: string) => value.trim(),
-      from: (value: string) => value.trim(),
-    },
   })
   content: string;
 
@@ -42,10 +34,6 @@ export class Block {
     type: 'int',
     nullable: true,
     comment: 'Orden del bloque dentro de la subsección del manual',
-    transformer: {
-      to: (value: number) => value,
-      from: (value: number) => value,
-    },
   })
   order: number;
 

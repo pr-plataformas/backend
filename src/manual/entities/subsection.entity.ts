@@ -19,10 +19,6 @@ export class Subsection {
     length: 255,
     comment: 'Título de la subsección del manual',
     unique: true,
-    transformer: {
-      to: (value: string) => value.trim(),
-      from: (value: string) => value.trim(),
-    },
   })
   title: string;
 
@@ -31,10 +27,6 @@ export class Subsection {
     type: 'text',
     nullable: true,
     comment: 'Orden de la subsección del manual',
-    transformer: {
-      to: (value: string) => value?.trim(),
-      from: (value: string) => value?.trim(),
-    },
   })
   order: number;
 

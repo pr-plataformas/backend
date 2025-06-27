@@ -13,10 +13,6 @@ export class Manual {
     unique: true,
     nullable: false,
     comment: 'Título del manual',
-    transformer: {
-      to: (value: string) => value.trim(),
-      from: (value: string) => value.trim(),
-    },
   })
   title: string;
 
