@@ -10,6 +10,8 @@ import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
 import { Video } from './entities/video.entity';
 import { VideoStorageService } from './video-storage.service';
+import { Category } from '../category/entities/category.entity'; // Assuming Category is imported from the correct path
+
 
 @Injectable()
 export class VideoService {
@@ -17,6 +19,8 @@ export class VideoService {
     @InjectRepository(Video)
     private readonly videoRepository: Repository<Video>,
     private readonly videoStorageService: VideoStorageService,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>, // Assuming Category is imported from the correct path
   ) {}
 
   async upload(
@@ -31,6 +35,17 @@ export class VideoService {
         fileUrl = await this.videoStorageService.uploadLargeFile(fileKey, file);
       } else {
         fileUrl = await this.videoStorageService.uploadFile(fileKey, file);
+      }
+
+      let category: Category = null;
+      if (createVideoDto.categoryId) {
+        category = await this.categoryRepository.findOne({ where: { id: createVideoDto.categoryId } });
+      } else if (createVideoDto.newCategory) {
+        category = await this.categoryRepository.findOne({ where: { name: createVideoDto.newCategory } });
+        if (!category) {
+          category = this.categoryRepository.create({ name: createVideoDto.newCategory });
+          category = await this.categoryRepository.save(category);
+        }
       }
 
       const uploadTime = (Date.now() - startTime) / 1000;
@@ -101,7 +116,7 @@ export class VideoService {
 
   async findAll() {
     try {
-      const videos = await this.videoRepository.find();
+      const videos = await this.videoRepository.find({ relations: ['category'] });
       console.log(videos);
       return videos;
     } catch (error) {
@@ -112,7 +127,7 @@ export class VideoService {
   }
 
   async findOne(id: string) {
-    const video = await this.videoRepository.findOne({ where: { id } });
+    const video = await this.videoRepository.findOne({ where: { id } , relations: ['category'],});
     if (!video) {
       throw new NotFoundException(`Video con ID "${id}" no encontrado`);
     }

@@ -13,6 +13,7 @@ import { VideoComment } from '../video-comment/entities/video-comment.entity';
 import { VideoInteraction } from '../video-interaction/entities/video-interaction.entity';
 import { VideoReport } from '../video-report/entities/video-report.entity';
 import { VideoBookmark } from '../video-bookmark/entities/video-bookmark.entity';
+import { Category } from '../category/entities/category.entity';
 @Module({
   imports: [
     ConfigModule,
@@ -46,6 +47,7 @@ import { VideoBookmark } from '../video-bookmark/entities/video-bookmark.entity'
       VideoInteraction,
       VideoReport,
       VideoBookmark,
+      Category,
     ]),
   ],
   exports: [TypeOrmModule],

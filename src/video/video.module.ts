@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Video } from './entities/video.entity';
 import { VideoStorageService } from './video-storage.service';
 import { S3Module } from '../s3/s3.module';
+import { Category } from '../category/entities/category.entity'; // Assuming Category is imported from the correct path
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Video]), S3Module],
+  imports: [TypeOrmModule.forFeature([Video, Category]), S3Module],
   controllers: [VideoController],
   providers: [VideoService, VideoStorageService],
 })
