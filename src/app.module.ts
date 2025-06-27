@@ -14,6 +14,7 @@ import { VideoReportModule } from './video-report/video-report.module';
 import { VideoModule } from './video/video.module';
 import { FirebaseModule } from './firebase/firebase.module';
 import { S3Module } from './s3/s3.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { S3Module } from './s3/s3.module';
     VideoReportModule,
     VideoBookmarkModule,
     S3Module,
+    CategoryModule,
   ],
 })
 export class AppModule {}

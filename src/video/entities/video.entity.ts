@@ -5,7 +5,10 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn
 } from 'typeorm';
+import { Category } from '../../category/entities/category.entity';
 
 @Entity('videos')
 export class Video {
@@ -28,6 +31,13 @@ export class Video {
     comment: 'Descripción del video',
   })
   description: string;
+
+  @ManyToOne(() => Category, (category) => category.videos, { nullable: true })
+  @JoinColumn({ name: 'category_id' })
+  category?: Category;
+
+  @Column({ name: 'category_id', type: 'uuid', nullable: true, comment: 'ID de la categoría asociada' })
+  categoryId?: string;
 
   @Column({
     name: 'file_key',

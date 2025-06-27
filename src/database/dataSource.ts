@@ -10,7 +10,7 @@ import { VideoComment } from '../video-comment/entities/video-comment.entity';
 import { VideoInteraction } from '../video-interaction/entities/video-interaction.entity';
 import { VideoReport } from '../video-report/entities/video-report.entity';
 import { Video } from '../video/entities/video.entity';
-
+import { Category } from '../category/entities/category.entity';
 config();
 
 export const dataSourceOptions: DataSourceOptions = {
@@ -34,6 +34,7 @@ export const dataSourceOptions: DataSourceOptions = {
     VideoInteraction,
     VideoReport,
     VideoBookmark,
+    Category,
   ],
 };
 
