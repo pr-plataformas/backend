@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { BlockService } from './block.service';
+import { BlockService } from './services/block.service';
 import { CreateBlockDto } from './dto/create-block.dto';
 import { CreateFullManualDto } from './dto/create-full-manual.dto';
 import { CreateManualDto } from './dto/create-manual.dto';
@@ -17,9 +17,9 @@ import { CreateSubsectionDto } from './dto/create-subsection.dto';
 import { ReorderBlocksDto } from './dto/reorder-blocks.dto';
 import { ReorderSectionsDto } from './dto/reorder-sections.dto';
 import { ReorderSubsectionsDto } from './dto/reorder-subsections.dto';
-import { ManualService } from './manual.service';
-import { SectionService } from './section.service';
-import { SubsectionService } from './subsection.service';
+import { ManualService } from './services/manual.service';
+import { SectionService } from './services/section.service';
+import { SubsectionService } from './services/subsection.service';
 import { ApiResponse } from 'src/common/types/ApiResponse.interface';
 import { Manual } from './entities/manual.entity';
 
