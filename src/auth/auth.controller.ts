@@ -40,24 +40,6 @@ export class AuthController {
       },
     };
   }
-
-  @Post('refresh')
-  @HttpCode(HttpStatus.OK)
-  @SwaggerApiResponse({ status: 200, description: 'Token refrescado.' })
-  async refresh(@Req() req): Promise<ApiResponse<any>> {
-    const { refreshToken } = req.body;
-    const { accessToken, user } =
-      await this.authService.refreshToken(refreshToken);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Token refrescado',
-      data: {
-        user,
-        accessToken,
-      },
-    };
-  }
-
   @UseGuards(GoogleAuthGuard)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
@@ -78,16 +60,16 @@ export class AuthController {
     };
   }
 
-  @Post('refresh-google')
+  @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  @SwaggerApiResponse({ status: 200, description: 'Token Google refrescado.' })
-  async refreshGoogle(@Req() req): Promise<ApiResponse<any>> {
+  @SwaggerApiResponse({ status: 200, description: 'Token refrescado.' })
+  async refresh(@Req() req): Promise<ApiResponse<any>> {
     const { refreshToken } = req.body;
     const { accessToken, user } =
       await this.authService.refreshToken(refreshToken);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Token Google refrescado',
+      message: 'Token refrescado',
       data: {
         user,
         accessToken,

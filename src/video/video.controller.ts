@@ -4,20 +4,19 @@ import {
   Delete,
   FileTypeValidator,
   Get,
-  Headers,
   HttpStatus,
   MaxFileSizeValidator,
   Param,
   ParseFilePipe,
   Patch,
   Post,
-  Res,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ApiResponse } from 'src/common/types/ApiResponse.interface';
 import { S3Service } from '../s3/s3.service';
 import { CreateVideoDto } from './dto/create-video.dto';
@@ -26,7 +25,7 @@ import { Video } from './entities/video.entity';
 import { VideoService } from './video.service';
 
 @ApiTags('videos')
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('videos')
 export class VideoController {
   constructor(
