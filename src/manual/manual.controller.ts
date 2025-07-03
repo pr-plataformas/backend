@@ -159,6 +159,7 @@ export class ManualController {
   }
 
   @Get()
+<<<<<<< HEAD
   async getAll(): Promise<ApiResponse<Manual[]>> {
     try {
       const manuals = await this.manualService.getAllManuals();
@@ -172,6 +173,37 @@ export class ManualController {
         statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error.message || 'Error retrieving manuals',
         data: null,
+=======
+  async getAll() {
+    try {
+      const manuals = await this.manualService.getAllManuals();
+      return {
+        statusCode: 200,
+        message: 'Manuales obtenidos exitosamente',
+        data: manuals,
+        meta: {
+          total: manuals.length,
+          timestamp: new Date().toISOString(),
+          description: 'Guías escritas paso a paso sobre temas clínicos con videos incluidos',
+          features: [
+            'Contenido estructurado por secciones',
+            'Videos explicativos integrados',
+            'Búsqueda y filtrado avanzado',
+            'Organización por categorías'
+          ]
+        }
+      };
+    } catch (error) {
+      return {
+        statusCode: error.statusCode || 500,
+        message: error.message || 'Error obteniendo manuales',
+        data: null,
+        meta: {
+          total: 0,
+          timestamp: new Date().toISOString(),
+          error: true
+        }
+>>>>>>> 95cbfbb9b490ec5e9ddb509fa33ba2aa670785df
       };
     }
   }

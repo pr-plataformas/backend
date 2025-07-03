@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import config from '../config/config';
+import { envConfig } from '../config/env.config';
 import { User } from '../users/entities/user.entity';
 import { Video } from '../video/entities/video.entity';
 
@@ -14,6 +15,7 @@ import { VideoInteraction } from '../video-interaction/entities/video-interactio
 import { VideoReport } from '../video-report/entities/video-report.entity';
 import { VideoBookmark } from '../video-bookmark/entities/video-bookmark.entity';
 import { Category } from '../category/entities/category.entity';
+
 @Module({
   imports: [
     ConfigModule,
@@ -21,17 +23,17 @@ import { Category } from '../category/entities/category.entity';
       imports: [ConfigModule],
       inject: [config.KEY],
       useFactory: (configService: ConfigType<typeof config>) => {
-        const { dbName, host, password, port, user } = configService.postgres;
+        // Configuración hardcodeada para evitar problemas de codificación
         return {
           type: 'postgres',
-          host,
-          port,
-          username: user,
-          password,
-          database: dbName,
+          host: 'localhost',
+          port: 5432,
+          username: 'postgres',
+          password: 'anashei',
+          database: 'users_db',
           autoLoadEntities: true,
-          migrationsRun: true,
-          synchronize: process.env.NODE_ENV !== 'production',
+          migrationsRun: false,
+          synchronize: false, // Desactivado - BD ya sincronizada
           logging: process.env.NODE_ENV !== 'production',
         };
       },
