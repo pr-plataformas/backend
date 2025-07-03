@@ -133,7 +133,7 @@ async function bootstrap() {
   await app.listen(configService.app.port);
 
   logger.log(
-    `${process.env.NODE_ENV === 'production' ? 'Production' : 'Development'} environment started successfully with CORS updated`,
+    `${process.env.NODE_ENV === 'production' ? 'Production' : 'Development'} environment started successfully`,
   );
 }
 
