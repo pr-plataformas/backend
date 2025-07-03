@@ -77,9 +77,15 @@ export class UsersService {
     }
   }
 
-  async deleteUser(id: string): Promise<void> {
+  async deleteUser(id: string): Promise<User> {
     try {
-      await this.usersRepository.delete(id);
+      const user = await this.findById(id);
+      const result = await this.usersRepository.delete(id);
+      if (result.affected === 0) {
+        throw new NotFoundException('Usuario no encontrado');
+      }
+
+      return user;
     } catch (error) {
       throw new InternalServerErrorException('Error al eliminar el usuario.');
     }

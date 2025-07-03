@@ -69,6 +69,8 @@ ENTRYPOINT ["/sbin/tini", "--"]
 
 EXPOSE 9999
 
+ENV NODE_ENV=production
+
 # Iniciar el servidor usando la construcción de producción
 CMD ["npm", "run", "start:prod"]
 

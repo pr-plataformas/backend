@@ -9,11 +9,12 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse as SwaggerApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateVideoInteractionDto } from './dto/create-video-interaction.dto';
 import { UpdateVideoInteractionDto } from './dto/update-video-interaction.dto';
 import { VideoInteractionService } from './video-interaction.service';
+import { ApiResponse } from 'src/common/types/ApiResponse.interface';
 
 @ApiTags('video-interactions')
 @UseGuards(JwtAuthGuard)
@@ -23,8 +24,8 @@ export class VideoInteractionController {
 
   @Post()
   @ApiOperation({ summary: 'Crear interacción de video' })
-  @ApiResponse({ status: 201, description: 'Interacción de video creada.' })
-  async create(@Body() createDto: CreateVideoInteractionDto) {
+  @SwaggerApiResponse({ status: 201, description: 'Interacción de video creada.' })
+  async create(@Body() createDto: CreateVideoInteractionDto): Promise<ApiResponse<any>> {
     try {
       const data = await this.service.create(createDto);
       return {
@@ -43,11 +44,8 @@ export class VideoInteractionController {
 
   @Get()
   @ApiOperation({ summary: 'Listar interacciones de video' })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de interacciones de video.',
-  })
-  async findAll() {
+  @SwaggerApiResponse({ status: 200, description: 'Lista de interacciones de video.' })
+  async findAll(): Promise<ApiResponse<any[]>> {
     try {
       const data = await this.service.findAll();
       return {
@@ -66,13 +64,17 @@ export class VideoInteractionController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Obtener interacción de video por id' })
-  @ApiResponse({
-    status: 200,
-    description: 'Interacción de video encontrada.',
-  })
-  async findOne(@Param('id') id: string) {
+  @SwaggerApiResponse({ status: 200, description: 'Interacción de video encontrada.' })
+  async findOne(@Param('id') id: string): Promise<ApiResponse<any>> {
     try {
       const data = await this.service.findOne(id);
+      if (!data) {
+        return {
+          message: 'Interacción de video no encontrada',
+          statusCode: HttpStatus.OK,
+          data: null,
+        };
+      }
       return {
         message: 'Interacción de video encontrada',
         statusCode: HttpStatus.OK,
@@ -89,14 +91,11 @@ export class VideoInteractionController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar interacción de video' })
-  @ApiResponse({
-    status: 200,
-    description: 'Interacción de video actualizada.',
-  })
+  @SwaggerApiResponse({ status: 200, description: 'Interacción de video actualizada.' })
   async update(
     @Param('id') id: string,
     @Body() updateDto: UpdateVideoInteractionDto,
-  ) {
+  ): Promise<ApiResponse<any>> {
     try {
       const data = await this.service.update(id, updateDto);
       return {
@@ -115,11 +114,8 @@ export class VideoInteractionController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar interacción de video' })
-  @ApiResponse({
-    status: 200,
-    description: 'Interacción de video eliminada.',
-  })
-  async remove(@Param('id') id: string) {
+  @SwaggerApiResponse({ status: 200, description: 'Interacción de video eliminada.' })
+  async remove(@Param('id') id: string): Promise<ApiResponse<any>> {
     try {
       const data = await this.service.remove(id);
       return {

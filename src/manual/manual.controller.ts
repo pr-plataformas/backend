@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -40,13 +41,13 @@ export class ManualController {
     try {
       const createdManual = await this.manualService.createManual(dto);
       return {
-        statusCode: 201,
+        statusCode: HttpStatus.CREATED,
         message: 'Manual created successfully',
         data: createdManual,
       };
     } catch (error) {
       return {
-        statusCode: error.statusCode || 500,
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error.message || 'Error creating manual',
         data: null,
       };
@@ -54,17 +55,19 @@ export class ManualController {
   }
 
   @Post('section')
-  async createSection(@Body() dto: CreateSectionDto) {
+  async createSection(
+    @Body() dto: CreateSectionDto,
+  ): Promise<ApiResponse<any>> {
     try {
       const createdSection = await this.sectionService.createSection(dto);
       return {
-        statusCode: 201,
+        statusCode: HttpStatus.CREATED,
         message: 'Section created successfully',
         data: createdSection,
       };
     } catch (error) {
       return {
-        statusCode: error.statusCode || 500,
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error.message || 'Error creating section',
         data: null,
       };
@@ -72,18 +75,20 @@ export class ManualController {
   }
 
   @Post('subsection')
-  async createSubsection(@Body() dto: CreateSubsectionDto) {
+  async createSubsection(
+    @Body() dto: CreateSubsectionDto,
+  ): Promise<ApiResponse<any>> {
     try {
       const createdSubsection =
         await this.subsectionService.createSubsection(dto);
       return {
-        statusCode: 201,
+        statusCode: HttpStatus.CREATED,
         message: 'Subsection created successfully',
         data: createdSubsection,
       };
     } catch (error) {
       return {
-        statusCode: error.statusCode || 500,
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error.message || 'Error creating subsection',
         data: null,
       };
@@ -91,17 +96,17 @@ export class ManualController {
   }
 
   @Post('block')
-  async createBlock(@Body() dto: CreateBlockDto) {
+  async createBlock(@Body() dto: CreateBlockDto): Promise<ApiResponse<any>> {
     try {
       const createdBlock = await this.blockService.createBlock(dto);
       return {
-        statusCode: 201,
+        statusCode: HttpStatus.CREATED,
         message: 'Block created successfully',
         data: createdBlock,
       };
     } catch (error) {
       return {
-        statusCode: error.statusCode || 500,
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error.message || 'Error creating block',
         data: null,
       };
@@ -109,17 +114,19 @@ export class ManualController {
   }
 
   @Post('full')
-  async createFullManual(@Body() dto: CreateFullManualDto) {
+  async createFullManual(
+    @Body() dto: CreateFullManualDto,
+  ): Promise<ApiResponse<any>> {
     try {
       const createdManual = await this.manualService.createFullManual(dto);
       return {
-        statusCode: 201,
+        statusCode: HttpStatus.CREATED,
         message: 'Full manual created successfully',
         data: createdManual,
       };
     } catch (error) {
       return {
-        statusCode: error.statusCode || 500,
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error.message || 'Error creating full manual',
         data: null,
       };
@@ -127,24 +134,24 @@ export class ManualController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<ApiResponse<Manual>> {
     try {
       const manual = await this.manualService.findOne(id);
       if (!manual) {
         return {
-          statusCode: 404,
+          statusCode: HttpStatus.OK,
           message: 'Manual not found',
           data: null,
         };
       }
       return {
-        statusCode: 200,
+        statusCode: HttpStatus.OK,
         message: 'Manual retrieved successfully',
         data: manual,
       };
     } catch (error) {
       return {
-        statusCode: error.statusCode || 500,
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error.message || 'Error retrieving manual',
         data: null,
       };
@@ -152,22 +159,37 @@ export class ManualController {
   }
 
   @Get()
-  async getAll() {
-    return this.manualService.getAllManuals();
+  async getAll(): Promise<ApiResponse<Manual[]>> {
+    try {
+      const manuals = await this.manualService.getAllManuals();
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Manuals retrieved successfully',
+        data: manuals,
+      };
+    } catch (error) {
+      return {
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message || 'Error retrieving manuals',
+        data: null,
+      };
+    }
   }
 
   @Patch('block/reorder')
-  async reorderBlocks(@Body() dto: ReorderBlocksDto) {
+  async reorderBlocks(
+    @Body() dto: ReorderBlocksDto,
+  ): Promise<ApiResponse<any>> {
     try {
       const reorderedBlocks = await this.blockService.reorderBlocks(dto);
       return {
-        statusCode: 200,
+        statusCode: HttpStatus.OK,
         message: 'Blocks reordered successfully',
         data: reorderedBlocks,
       };
     } catch (error) {
       return {
-        statusCode: error.statusCode || 500,
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error.message || 'Error reordering blocks',
         data: null,
       };
@@ -175,17 +197,19 @@ export class ManualController {
   }
 
   @Patch('section/reorder')
-  async reorderSections(@Body() dto: ReorderSectionsDto) {
+  async reorderSections(
+    @Body() dto: ReorderSectionsDto,
+  ): Promise<ApiResponse<any>> {
     try {
       const reorderedSections = await this.sectionService.reorderSections(dto);
       return {
-        statusCode: 200,
+        statusCode: HttpStatus.OK,
         message: 'Sections reordered successfully',
         data: reorderedSections,
       };
     } catch (error) {
       return {
-        statusCode: error.statusCode || 500,
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error.message || 'Error reordering sections',
         data: null,
       };
@@ -193,18 +217,20 @@ export class ManualController {
   }
 
   @Patch('subsection/reorder')
-  async reorderSubsections(@Body() dto: ReorderSubsectionsDto) {
+  async reorderSubsections(
+    @Body() dto: ReorderSubsectionsDto,
+  ): Promise<ApiResponse<any>> {
     try {
       const reorderedSubsections =
         await this.subsectionService.reorderSubsections(dto);
       return {
-        statusCode: 200,
+        statusCode: HttpStatus.OK,
         message: 'Subsections reordered successfully',
         data: reorderedSubsections,
       };
     } catch (error) {
       return {
-        statusCode: error.statusCode || 500,
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error.message || 'Error reordering subsections',
         data: null,
       };

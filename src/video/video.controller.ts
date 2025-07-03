@@ -13,17 +13,17 @@ import {
   Post,
   Res,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { ApiResponse } from 'src/common/types/ApiResponse.interface';
+import { S3Service } from '../s3/s3.service';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
+import { Video } from './entities/video.entity';
 import { VideoService } from './video.service';
-import { S3Service } from '../s3/s3.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('videos')
 // @UseGuards(JwtAuthGuard)
@@ -71,95 +71,116 @@ export class VideoController {
     )
     file: Express.Multer.File,
     @Body() createVideoDto: CreateVideoDto,
-  ) {
-    const video = await this.videoService.upload(file, createVideoDto);
-    return {
-      statusCode: 201,
-      message: 'Video uploaded successfully',
-      data: video,
-    };
+  ): Promise<ApiResponse<Video>> {
+    try {
+      const video = await this.videoService.upload(file, createVideoDto);
+      return {
+        statusCode: HttpStatus.CREATED,
+        message: 'Video subido exitosamente',
+        data: video,
+      };
+    } catch (error) {
+      return {
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message || 'Error al subir el video',
+        data: null,
+      };
+    }
   }
 
   @Get()
-  async findAll() {
-    const videos = await this.videoService.findAll();
-    return {
-      statusCode: HttpStatus.OK,
-      data: videos,
-    };
-  }
-
-  @Get('bucket-list')
-  async listBucketVideos() {
-    const files = await this.s3Service.listVideos();
-    return {
-      statusCode: 200,
-      data: files,
-    };
-  }
-
-  @Get('bucket-list-urls')
-  async listBucketVideoUrls() {
-    const keys = await this.s3Service.listVideos();
-    const urls = keys.map((key) => this.s3Service.getFileUrl(key));
-    return {
-      statusCode: 200,
-      data: urls,
-    };
+  async findAll(): Promise<ApiResponse<Video[]>> {
+    try {
+      const videos = await this.videoService.findAll();
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Videos obtenidos exitosamente',
+        data: videos,
+      };
+    } catch (error) {
+      return {
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message || 'Error al obtener los videos',
+        data: null,
+      };
+    }
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const video = await this.videoService.findOne(id);
-    return {
-      statusCode: HttpStatus.OK,
-      data: video,
-    };
-  }
-
-  @Get(':id/stream')
-  async streamVideo(
-    @Param('id') id: string,
-    @Headers('range') range?: string,
-    @Res() res?: Response,
-  ) {
-    const { stream, contentLength, contentRange, contentType, statusCode } =
-      await this.videoService.getVideoStream(id, range);
-
-    res.status(statusCode);
-    res.set({
-      'Content-Type': contentType,
-      'Content-Length': contentLength.toString(),
-      'Accept-Ranges': 'bytes',
-      'Cache-Control': 'no-cache',
-    });
-
-    if (contentRange) {
-      res.set('Content-Range', contentRange);
+  async findOne(@Param('id') id: string): Promise<ApiResponse<Video>> {
+    try {
+      const video = await this.videoService.findOne(id);
+      if (!video) {
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Video no encontrado',
+          data: null,
+        };
+      }
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Video obtenido exitosamente',
+        data: video,
+      };
+    } catch (error) {
+      return {
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message || 'Error al obtener el video',
+        data: null,
+      };
     }
-
-    stream.pipe(res);
   }
 
   @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() updateVideoDto: UpdateVideoDto,
-  ) {
-    const video = await this.videoService.update(id, updateVideoDto);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Video actualizado exitosamente',
-      data: video,
-    };
+  ): Promise<ApiResponse<Video>> {
+    try {
+      const updatedVideo = await this.videoService.update(id, updateVideoDto);
+      if (!updatedVideo) {
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Video no encontrado',
+          data: null,
+        };
+      }
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Video actualizado exitosamente',
+        data: updatedVideo,
+      };
+    } catch (error) {
+      return {
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message || 'Error al actualizar el video',
+        data: null,
+      };
+    }
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    await this.videoService.remove(id);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Video eliminado exitosamente',
-    };
+  async remove(@Param('id') id: string): Promise<ApiResponse<null>> {
+    try {
+      const deletedVideo = await this.videoService.remove(id);
+      if (!deletedVideo) {
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Video no encontrado',
+          data: null,
+        };
+      }
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Video eliminado exitosamente',
+        data: null,
+      };
+    } catch (error) {
+      return {
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message || 'Error al eliminar el video',
+        data: null,
+      };
+    }
   }
 }
