@@ -8,8 +8,6 @@ export const typeOrmConfig = (): PostgresConnectionOptions => ({
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
-  synchronize: process.env.DB_SYNCH === 'true',
-  logging: process.env.DB_LOG === 'true',
   migrationsRun: true,
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/database/migrations/*{.ts,.js}'],

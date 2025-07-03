@@ -88,18 +88,13 @@ export class VideoController {
   }
 
   @Get()
-<<<<<<< HEAD
   async findAll(): Promise<ApiResponse<Video[]>> {
-=======
-  async findAll() {
->>>>>>> 95cbfbb9b490ec5e9ddb509fa33ba2aa670785df
     try {
       const videos = await this.videoService.findAll();
       return {
         statusCode: HttpStatus.OK,
         message: 'Videos obtenidos exitosamente',
         data: videos,
-<<<<<<< HEAD
       };
     } catch (error) {
       return {
@@ -108,59 +103,6 @@ export class VideoController {
         data: null,
       };
     }
-=======
-        meta: {
-          total: videos.length,
-          timestamp: new Date().toISOString(),
-          description: 'Videos educativos que muestran cómo realizar procedimientos correctamente',
-          features: [
-            'Streaming de alta calidad',
-            'Sistema de comentarios',
-            'Interacciones (like/dislike)',
-            'Marcadores personales',
-            'Sistema de reportes'
-          ],
-          capabilities: {
-            streaming: 'Habilitado',
-            comments: 'Sistema completo',
-            interactions: 'Like/Dislike disponible',
-            bookmarks: 'Marcadores personales',
-            reports: 'Sistema de reportes activo'
-          }
-        }
-      };
-    } catch (error) {
-      return {
-        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message || 'Error obteniendo videos',
-        data: null,
-        meta: {
-          total: 0,
-          timestamp: new Date().toISOString(),
-          error: true
-        }
-      };
-    }
-  }
-
-  @Get('bucket-list')
-  async listBucketVideos() {
-    const files = await this.s3Service.listVideos();
-    return {
-      statusCode: 200,
-      data: files,
-    };
-  }
-
-  @Get('bucket-list-urls')
-  async listBucketVideoUrls() {
-    const keys = await this.s3Service.listVideos();
-    const urls = keys.map((key) => this.s3Service.getFileUrl(key));
-    return {
-      statusCode: 200,
-      data: urls,
-    };
->>>>>>> 95cbfbb9b490ec5e9ddb509fa33ba2aa670785df
   }
 
   @Get(':id')

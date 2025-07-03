@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import config from '../config/config';
-import { envConfig } from '../config/env.config';
 import { User } from '../users/entities/user.entity';
 import { Video } from '../video/entities/video.entity';
 
@@ -15,7 +14,6 @@ import { VideoInteraction } from '../video-interaction/entities/video-interactio
 import { VideoReport } from '../video-report/entities/video-report.entity';
 import { VideoBookmark } from '../video-bookmark/entities/video-bookmark.entity';
 import { Category } from '../category/entities/category.entity';
-
 @Module({
   imports: [
     ConfigModule,
@@ -23,17 +21,29 @@ import { Category } from '../category/entities/category.entity';
       imports: [ConfigModule],
       inject: [config.KEY],
       useFactory: (configService: ConfigType<typeof config>) => {
-        // Configuración hardcodeada para evitar problemas de codificación
+        const { dbName, host, password, port, user } = configService.postgres;
         return {
           type: 'postgres',
-          host: 'localhost',
-          port: 5432,
-          username: 'postgres',
-          password: 'anashei',
-          database: 'users_db',
-          autoLoadEntities: true,
-          migrationsRun: false,
-          synchronize: false, // Desactivado - BD ya sincronizada
+          host,
+          port,
+          username: user,
+          password,
+          database: dbName,
+          migrationsRun: true,
+          entities: [
+            User,
+            Video,
+            Manual,
+            Section,
+            Subsection,
+            Block,
+            VideoComment,
+            VideoInteraction,
+            VideoReport,
+            VideoBookmark,
+            Category,
+          ],
+          synchronize: process.env.NODE_ENV !== 'production',
           logging: process.env.NODE_ENV !== 'production',
         };
       },

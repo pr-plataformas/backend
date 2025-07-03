@@ -1,6 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as admin from 'firebase-admin';
-import { PROFESOR_UCN_REGEX, ADMIN_EMAILS } from '../common/constants/ucn-email.regex';
+import {
+  PROFESOR_UCN_REGEX,
+  ADMIN_EMAILS,
+} from '../common/constants/ucn-email.regex';
 import { UserRole } from '../common/enums/user-role.enum';
 import { JwtService } from '../jwt/jwt.service';
 import { User } from '../users/entities/user.entity';
@@ -20,7 +23,7 @@ export class AuthService {
   async registerUser(decodedToken: admin.auth.DecodedIdToken): Promise<User> {
     const email = decodedToken.email;
     let role: UserRole = UserRole.ESTUDIANTE;
-    
+
     // Verificar si es administrador
     if (ADMIN_EMAILS.includes(email.toLowerCase())) {
       role = UserRole.ADMINISTRADOR;
@@ -29,7 +32,7 @@ export class AuthService {
     else if (PROFESOR_UCN_REGEX.test(email)) {
       role = UserRole.PROFESOR;
     }
-    
+
     return this.usersService.createUser({
       email: decodedToken.email,
       fullName: decodedToken.name || decodedToken.email,

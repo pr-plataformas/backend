@@ -13,12 +13,13 @@ import { Category } from '../category/entities/category.entity';
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
-  host: process.env.POSTGRES_HOST || 'clinic_hub_db',
+  host: process.env.POSTGRES_HOST || 'localhost',
   port: parseInt(process.env.POSTGRES_PORT) || 5432,
   username: process.env.POSTGRES_USER || 'postgres',
-  password: process.env.POSTGRES_PASSWORD || 'anashei',
+  password: process.env.POSTGRES_PASSWORD || 'postgres',
   database: process.env.POSTGRES_DB || 'clinic_hub_db',
   logging: true,
+  migrationsRun: true,
   migrations: ['src/database/migrations/*.ts'],
   migrationsTableName: 'migrations',
   entities: [
