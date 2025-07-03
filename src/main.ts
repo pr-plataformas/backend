@@ -39,11 +39,31 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1');
 
-  app.enableCors();
+  // Configure CORS with more specific settings
+  app.enableCors({
+    origin: [
+      'http://localhost:3000', // React dev server
+      'http://localhost:3001', // Alternative React port
+      'http://localhost:5173', // Vite dev server (primary)
+      'http://localhost:5174', // Vite dev server (alternative)
+      'http://localhost:8080', // Alternative frontend port
+      // Add your production frontend domain here
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  });
 
   app.use(helmet({}));
 
   app.use(compression());
+
+  // Request logging middleware
+  app.use((req, res, next) => {
+    const logger = new Logger('HTTP');
+    logger.log(`${req.method} ${req.url} - ${req.ip}`);
+    next();
+  });
 
   // Limita cada IP a 100 solicitudes por ventana de 15 minutos
   app.use(
@@ -113,7 +133,7 @@ async function bootstrap() {
   await app.listen(configService.app.port);
 
   logger.log(
-    `${process.env.NODE_ENV === 'production' ? 'Production' : 'Development'} enviroment started successfully`,
+    `${process.env.NODE_ENV === 'production' ? 'Production' : 'Development'} environment started successfully with CORS updated`,
   );
 }
 

@@ -30,20 +30,29 @@ export class FirebaseAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
     try {
+      this.logger.log(`Attempting authentication for ${req.method} ${req.url}`);
+      
       const token = this.extractToken(req.headers.authorization);
+      this.logger.log('Token extracted successfully');
+      
       const decodedToken = await this.firebaseService.verifyIdToken(token);
+      this.logger.log(`Token verified for email: ${decodedToken.email}`);
+      
       this.validateInstitutionalEmail(decodedToken.email);
+      this.logger.log(`Institutional email validated: ${decodedToken.email}`);
+      
       req.firebaseDecoded = decodedToken;
-      this.logger.log(`Token válido para: ${decodedToken.email}`);
+      this.logger.log(`Authentication successful for: ${decodedToken.email}`);
       return true;
     } catch (err) {
-      this.logger.error('Error en autenticación FirebaseAuthGuard', err);
+      this.logger.error(`Authentication failed: ${err.message}`, err.stack);
       if (
         err instanceof UnauthorizedException ||
         err instanceof ForbiddenException
-      )
+      ) {
         throw err;
-      throw new UnauthorizedException('Invalid token');
+      }
+      throw new UnauthorizedException(`Authentication failed: ${err.message}`);
     }
   }
 
@@ -67,10 +76,18 @@ export class FirebaseAuthGuard implements CanActivate {
    * @throws ForbiddenException si el correo no es válido.
    */
   private validateInstitutionalEmail(email: string): void {
-    if (!email || !ucnRegex.test(email)) {
+    if (!email) {
+      this.logger.warn('No email provided in token');
+      throw new ForbiddenException('No email found in authentication token');
+    }
+    
+    if (!ucnRegex.test(email)) {
+      this.logger.warn(`Invalid institutional email attempted: ${email}`);
       throw new ForbiddenException(
-        'Solo se permiten correos institucionales UCN.',
+        `Solo se permiten correos institucionales UCN. Email recibido: ${email}. Formatos válidos: @ucn.cl, @alumnos.ucn.cl, @ce.ucn.cl`
       );
     }
+    
+    this.logger.log(`Valid UCN email: ${email}`);
   }
 }

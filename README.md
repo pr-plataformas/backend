@@ -1,51 +1,212 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🏥 Backend API - Sistema de Videoteca de Enfermería
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend desarrollado con NestJS para la gestión de contenido educativo de enfermería, incluyendo autenticación con Firebase/Google, manejo de videos y sistema de roles.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Inicio Rápido
 
-## Description
+### Prerequisites
+- **Node.js** (v18 o superior)
+- **Docker Desktop** (para PostgreSQL)
+- **npm** o **yarn**
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### 🔧 Configuración Automática
 
-## Project setup
-
-```bash
-$ npm install
+1. **Verifica la configuración:**
+```powershell
+.\check-setup.ps1
 ```
 
-## Compile and run the project
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+2. **Inicia el proyecto completo:**
+```powershell
+.\start-dev.ps1
 ```
 
-## Run tests
+### 📝 Configuración Manual
+
+1. **Instalar dependencias:**
+```bash
+npm install
+```
+
+2. **Configurar variables de entorno:**
+   - Revisa `.env.dev` y configura las variables necesarias
+   - Para desarrollo local, la configuración de DB ya está lista
+
+3. **Iniciar servicios:**
+```bash
+# Levantar PostgreSQL y PgAdmin
+docker-compose up -d
+
+# Ejecutar migraciones (si las hay)
+npm run migration:run
+
+# Iniciar aplicación
+npm run start:dev
+```
+
+## 🌐 URLs del Proyecto
+
+- **API**: http://localhost:9999
+- **Swagger Documentation**: http://localhost:9999/api/docs
+- **PgAdmin**: http://localhost:5050
+  - Email: `root@localhost`
+  - Password: `root`
+
+## 🏗️ Arquitectura
+
+### Módulos Principales
+- **Auth**: Autenticación con Firebase y Google OAuth
+- **Users**: Gestión de usuarios con roles (Estudiante, Profesor, Admin)
+- **Videos**: Subida y gestión de videos con AWS S3
+- **Categories**: Categorización de contenido
+- **Manual**: Gestión de manuales de procedimientos
+
+### Roles de Usuario
+- **Estudiante**: Acceso básico a contenido
+- **Profesor**: Puede subir y gestionar contenido
+- **Administrador**: Control total del sistema
+
+### Seguridad
+- JWT con refresh tokens
+- Rate limiting
+- Helmet para headers de seguridad
+- Validación de emails UCN (@alumnos.ucn.cl, @ucn.cl)
+
+## 🔑 Variables de Entorno Importantes
+
+```bash
+# Base de datos
+POSTGRES_DB=clinic_hub_db
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=anashei
+
+# JWT
+ACCESS_JWT_SECRET=tu-secret-aquí
+REFRESH_JWT_SECRET=tu-refresh-secret-aquí
+
+# Firebase (opcional para desarrollo)
+FIREBASE_PROJECT_ID=tu-proyecto-id
+FIREBASE_PRIVATE_KEY=tu-private-key
+FIREBASE_CLIENT_EMAIL=tu-client-email
+
+# AWS S3 (opcional para desarrollo)
+AWS_ACCESS_KEY_ID=tu-access-key
+AWS_SECRET_ACCESS_KEY=tu-secret-key
+AWS_S3_BUCKET_NAME=tu-bucket
+```
+
+## 📊 Base de Datos
+
+### Conexión Local
+- **Host**: localhost
+- **Puerto**: 5432
+- **Base de datos**: clinic_hub_db
+- **Usuario**: postgres
+- **Contraseña**: anashei
+
+### PgAdmin
+- **URL**: http://localhost:5050
+- **Email**: root@localhost
+- **Password**: root
+
+## 🛠️ Scripts Disponibles
+
+```bash
+# Desarrollo
+npm run start:dev          # Modo desarrollo con hot reload
+npm run start:debug        # Modo debug
+
+# Construcción
+npm run build              # Compilar para producción
+npm run start:prod         # Ejecutar en producción
+
+# Base de datos
+npm run migration:generate # Generar nueva migración
+npm run migration:run      # Ejecutar migraciones
+npm run migration:show     # Mostrar migraciones
+
+# Testing
+npm run test               # Tests unitarios
+npm run test:e2e          # Tests end-to-end
+npm run test:cov          # Coverage
+
+# Calidad de código
+npm run lint              # ESLint
+npm run format            # Prettier
+```
+
+## 🐳 Docker
+
+### Servicios incluidos:
+- **PostgreSQL**: Base de datos principal
+- **PgAdmin**: Interface web para PostgreSQL
+- **API**: Aplicación NestJS (en modo producción)
+
+```bash
+# Solo base de datos (desarrollo)
+docker-compose up -d clinic_hub_db pgadmin
+
+# Todo el stack (producción)
+docker-compose up -d
+```
+
+## 🔐 Autenticación
+
+### Métodos soportados:
+1. **Firebase Auth**: Token ID de Firebase
+2. **Google OAuth**: Login directo con Google
+
+### Endpoints principales:
+- `POST /api/v1/auth/firebase` - Login con Firebase
+- `POST /api/v1/auth/google` - Login con Google
+- `POST /api/v1/auth/refresh` - Renovar tokens
+
+## 📚 Documentación API
+
+La documentación completa de la API está disponible en:
+**http://localhost:9999/api/docs** (Swagger)
+
+## 🧪 Testing
+
+```bash
+# Tests unitarios
+npm run test
+
+# Tests e2e
+npm run test:e2e
+
+# Coverage
+npm run test:cov
+```
+
+## ⚠️ Notas Importantes
+
+1. **Emails UCN**: Solo emails con dominio UCN tienen acceso
+2. **Administradores**: Configurados en `src/common/constants/ucn-email.regex.ts`
+3. **Subida de archivos**: Timeout extendido para videos grandes
+4. **Seguridad**: Headers de seguridad configurados automáticamente
+
+## 🤝 Desarrollo
+
+### Estructura del proyecto:
+```
+src/
+├── auth/           # Autenticación y autorización
+├── users/          # Gestión de usuarios
+├── videos/         # Manejo de videos
+├── categories/     # Categorización
+├── manual/         # Manuales de procedimientos
+├── config/         # Configuración de la aplicación
+├── database/       # Configuración de base de datos
+└── common/         # Utilidades compartidas
+```
+
+## 📞 Soporte
+
+Para problemas o preguntas:
+1. Revisa la documentación en Swagger
+2. Verifica los logs de la aplicación
+3. Consulta la configuración en `.env.dev`
 
 ```bash
 # unit tests

@@ -153,7 +153,36 @@ export class ManualController {
 
   @Get()
   async getAll() {
-    return this.manualService.getAllManuals();
+    try {
+      const manuals = await this.manualService.getAllManuals();
+      return {
+        statusCode: 200,
+        message: 'Manuales obtenidos exitosamente',
+        data: manuals,
+        meta: {
+          total: manuals.length,
+          timestamp: new Date().toISOString(),
+          description: 'Guías escritas paso a paso sobre temas clínicos con videos incluidos',
+          features: [
+            'Contenido estructurado por secciones',
+            'Videos explicativos integrados',
+            'Búsqueda y filtrado avanzado',
+            'Organización por categorías'
+          ]
+        }
+      };
+    } catch (error) {
+      return {
+        statusCode: error.statusCode || 500,
+        message: error.message || 'Error obteniendo manuales',
+        data: null,
+        meta: {
+          total: 0,
+          timestamp: new Date().toISOString(),
+          error: true
+        }
+      };
+    }
   }
 
   @Patch('block/reorder')

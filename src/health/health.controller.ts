@@ -10,4 +10,65 @@ export class HealthController {
   check() {
     return this.health.check([() => ({ api: { status: 'up' } })]);
   }
+
+  @Get('status')
+  getStatus() {
+    return {
+      status: 'OK',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      port: process.env.APP_PORT || 3000,
+      database: process.env.POSTGRES_DB || 'not configured',
+      firebase: {
+        configured: !!(process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL),
+        projectId: process.env.FIREBASE_PROJECT_ID || 'not configured'
+      }
+    };
+  }
+
+  @Get('app-info')
+  getAppInfo() {
+    return {
+      application: {
+        name: 'Videoteca de Enfermería',
+        version: '1.0.0',
+        description: 'Sistema de gestión de contenido educativo para enfermería',
+        features: {
+          authentication: 'Firebase Google Auth',
+          storage: 'AWS S3',
+          database: 'PostgreSQL',
+          videoStreaming: 'Habilitado',
+          manualSystem: 'Sistema completo de manuales'
+        }
+      },
+      modules: {
+        manuals: {
+          description: 'Explora guías escritas paso a paso sobre temas clínicos con videos incluidos',
+          capabilities: ['Creación', 'Lectura', 'Búsqueda', 'Categorización']
+        },
+        videos: {
+          description: 'Aprende con videos que muestran cómo realizar los procedimientos correctamente',
+          capabilities: ['Streaming', 'Comentarios', 'Interacciones', 'Reportes', 'Marcadores']
+        },
+        categories: {
+          description: 'Sistema de categorización para organizar contenido',
+          capabilities: ['Gestión de categorías', 'Filtrado', 'Organización']
+        }
+      },
+      theme: {
+        supportedModes: ['light', 'dark'],
+        defaultMode: 'light',
+        persistentSettings: true
+      }
+    };
+  }
+
+  @Get('cors-test')
+  testCors() {
+    return {
+      message: 'CORS test successful',
+      timestamp: new Date().toISOString(),
+      headers: 'Access-Control-Allow-Origin should be present'
+    };
+  }
 }

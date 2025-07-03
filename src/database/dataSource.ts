@@ -1,4 +1,3 @@
-import { config } from 'dotenv';
 import { VideoBookmark } from '../video-bookmark/entities/video-bookmark.entity';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { Block } from '../manual/entities/block.entity';
@@ -11,15 +10,14 @@ import { VideoInteraction } from '../video-interaction/entities/video-interactio
 import { VideoReport } from '../video-report/entities/video-report.entity';
 import { Video } from '../video/entities/video.entity';
 import { Category } from '../category/entities/category.entity';
-config();
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
-  host: 'localhost',
-  port: 5432,
-  username: 'postgres',
-  password: 'postgres',
-  database: 'clinic_hub_db',
+  host: process.env.POSTGRES_HOST || 'clinic_hub_db',
+  port: parseInt(process.env.POSTGRES_PORT) || 5432,
+  username: process.env.POSTGRES_USER || 'postgres',
+  password: process.env.POSTGRES_PASSWORD || 'anashei',
+  database: process.env.POSTGRES_DB || 'clinic_hub_db',
   logging: true,
   migrations: ['src/database/migrations/*.ts'],
   migrationsTableName: 'migrations',
