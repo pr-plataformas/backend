@@ -1,11 +1,11 @@
-import { IsInt, IsString, MaxLength, IsNotEmpty } from 'class-validator';
+import { IsInt, isUUID,IsString, MaxLength, IsNotEmpty, IsUUID } from 'class-validator';
 
 export class CreateVideoCommentDto {
-  @IsInt()
+  @IsUUID()
   @IsNotEmpty()
   userId: string;
 
-  @IsInt()
+  @IsUUID()
   @IsNotEmpty()
   videoId: string;
 
