@@ -56,6 +56,25 @@ export class VideoCommentController {
     }
   }
 
+  // Agregar endpoint para obtener comentarios por videoId
+  @Get('video/:videoId')
+  async findByVideoId(@Param('videoId') videoId: string): Promise<ApiResponse<any[]>> {
+    try {
+      const comments = await this.service.findByVideoId(videoId);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Comentarios obtenidos exitosamente',
+        data: comments,
+      };
+    } catch (error) {
+      return {
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message || 'Error obteniendo los comentarios',
+        data: null,
+      };
+    }
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<ApiResponse<any>> {
     try {

@@ -12,24 +12,51 @@ export class VideoCommentService {
     private readonly commentRepository: Repository<VideoComment>,
   ) {}
 
-  create(dto: CreateVideoCommentDto) {
-    const comment = this.commentRepository.create(dto);
-    return this.commentRepository.save(comment);
+  async create(dto: CreateVideoCommentDto) {
+    const comment = this.commentRepository.create({
+      userId: dto.userId,
+      videoId: dto.videoId,
+      comment: dto.comment,
+    });
+    
+    const savedComment = await this.commentRepository.save(comment);
+    
+    // Buscar el comentario con las relaciones incluidas
+    return this.commentRepository.findOne({
+      where: { id: savedComment.id },
+      relations: ['user'],
+    });
   }
 
   findAll() {
-    return this.commentRepository.find();
+    return this.commentRepository.find({
+      relations: ['user'],
+      order: { createdAt: 'DESC' },
+    });
   }
 
   findOne(id: string) {
-    return this.commentRepository.findOne({ where: { id } });
+    return this.commentRepository.findOne({ 
+      where: { id },
+      relations: ['user'],
+    });
   }
 
-  update(id: string, dto: UpdateVideoCommentDto) {
-    return this.commentRepository.update(id, dto);
+  // Agregar método para buscar por videoId
+  findByVideoId(videoId: string) {
+    return this.commentRepository.find({
+      where: { videoId },
+      relations: ['user'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async update(id: string, dto: UpdateVideoCommentDto) {
+    await this.commentRepository.update(id, dto);
+    return this.findOne(id);
   }
 
   remove(id: string) {
-    return this.commentRepository.delete(id);
+    return this.commentRepository.softDelete(id);
   }
 }
