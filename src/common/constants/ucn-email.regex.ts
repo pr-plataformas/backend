@@ -5,5 +5,6 @@ export const UCN_EMAIL_REGEX = /^[^@]+@(?:[a-zA-Z0-9-]+\.)*ucn\.cl$/i;
 // Lista de emails que tendrán rol de administrador
 export const ADMIN_EMAILS = [
   'jairo.vergara@alumnos.ucn.cl',
+  'soporte.videoteca@gmail.com',
   // Agregar aquí más emails de administradores si es necesario
 ];
