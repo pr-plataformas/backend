@@ -17,9 +17,16 @@ export class SubsectionService {
   async createSubsection(dto: CreateSubsectionDto) {
     const section = await this.sectionRepo.findOneBy({ id: dto.sectionId });
     if (!section) throw new NotFoundException('Section not found');
+    
+    // Calcular el orden automáticamente
+    const existingSubsectionsCount = await this.subsectionRepo.count({
+      where: { section: { id: dto.sectionId } }
+    });
+    
     const subsection = this.subsectionRepo.create({
       title: dto.title,
       section,
+      order: existingSubsectionsCount
     });
     return this.subsectionRepo.save(subsection);
   }
@@ -41,5 +48,13 @@ export class SubsectionService {
       order: { order: 'ASC' },
     });
     return updatedSubsections;
+  }
+
+  async deleteSubsection(id: string) {
+    const subsection = await this.subsectionRepo.findOneBy({ id });
+    if (!subsection) {
+      throw new NotFoundException('Subsection not found');
+    }
+    return this.subsectionRepo.remove(subsection);
   }
 }
