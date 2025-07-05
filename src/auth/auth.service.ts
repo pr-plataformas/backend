@@ -93,8 +93,8 @@ export class AuthService {
       const newPayload = this.buildJwtPayload(user);
       const accessToken = await this.jwtService.generateAccessToken(newPayload);
       const newRefreshToken =
-        await this.jwtService.generateRefreshToken(newPayload); // Rotación
-      return { accessToken, refreshToken: newRefreshToken, user };
+        await this.jwtService.generateRefreshToken(newPayload);
+      return { accessToken, refreshToken: newRefreshToken };
     } catch (error) {
       throw new UnauthorizedException('Refresh token inválido o expirado.');
     }

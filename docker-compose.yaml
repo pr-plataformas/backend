@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   clinic_hub_db:
     image: postgres:latest

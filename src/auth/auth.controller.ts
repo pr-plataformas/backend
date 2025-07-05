@@ -1,9 +1,11 @@
 import {
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
   Req,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -15,6 +17,8 @@ import { AuthService } from './auth.service';
 import { FirebaseAuthGuard } from './guards/firebase-auth.guard';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { ApiResponse } from 'src/common/types/ApiResponse.interface';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { RefreshTokenGuard } from './guards/refresh-token.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -46,34 +50,64 @@ export class AuthController {
   @SwaggerApiResponse({ status: 200, description: 'Login Google exitoso.' })
   @Post('login-google')
   async loginGoogle(@Req() req): Promise<ApiResponse<any>> {
-    const decodedToken = req.googleDecoded;
-    const { user, accessToken, refreshToken } =
-      await this.authService.loginWithGoogleToken(decodedToken);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Login Google exitoso',
-      data: {
-        user,
-        accessToken,
-        refreshToken,
-      },
-    };
+    try {
+      const decodedToken = req.googleDecoded;
+      const { user, accessToken, refreshToken } =
+        await this.authService.loginWithGoogleToken(decodedToken);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Login Google exitoso',
+        data: {
+          user,
+          accessToken,
+          refreshToken,
+        },
+      };
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Error al iniciar sesión con Google',
+        data: null,
+      };
+    }
   }
 
+  @UseGuards(RefreshTokenGuard)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse({ status: 200, description: 'Token refrescado.' })
-  async refresh(@Req() req): Promise<ApiResponse<any>> {
-    const { refreshToken } = req.body;
-    const { accessToken, user } =
-      await this.authService.refreshToken(refreshToken);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Token refrescado',
-      data: {
-        user,
-        accessToken,
-      },
-    };
+  async refresh(
+    @Req() req,
+  ): Promise<ApiResponse<{ accessToken: string; refreshToken: string }>> {
+    try {
+      const { accessToken, refreshToken } = await this.authService.refreshToken(
+        req.refreshToken,
+      );
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Tokens refrescados exitosamente',
+        data: { accessToken, refreshToken },
+      };
+    } catch (error) {
+      if (error.statusCode === HttpStatus.UNAUTHORIZED) {
+        if (error.name === 'TokenExpiredError') {
+          return {
+            statusCode: HttpStatus.UNAUTHORIZED,
+            message: 'Refresh token expirado',
+            data: null,
+          };
+        }
+      }
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Error al refrescar tokens',
+        data: null,
+      };
+    }
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('validate')
+  validateToken(@Request() req) {
+    return { valid: true, user: req.user };
   }
 }
