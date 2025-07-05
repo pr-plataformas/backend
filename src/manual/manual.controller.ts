@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
@@ -232,6 +233,121 @@ export class ManualController {
       return {
         statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
         message: error.message || 'Error reordering subsections',
+        data: null,
+      };
+    }
+  }
+
+  // DELETE endpoints
+  @Delete(':id')
+  async deleteManual(@Param('id') id: string): Promise<ApiResponse<any>> {
+    try {
+      await this.manualService.deleteManual(id);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Manual deleted successfully',
+        data: null,
+      };
+    } catch (error) {
+      return {
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message || 'Error deleting manual',
+        data: null,
+      };
+    }
+  }
+
+  @Delete('section/:id')
+  async deleteSection(@Param('id') id: string): Promise<ApiResponse<any>> {
+    try {
+      await this.sectionService.deleteSection(id);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Section deleted successfully',
+        data: null,
+      };
+    } catch (error) {
+      return {
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message || 'Error deleting section',
+        data: null,
+      };
+    }
+  }
+
+  @Delete('subsection/:id')
+  async deleteSubsection(@Param('id') id: string): Promise<ApiResponse<any>> {
+    try {
+      await this.subsectionService.deleteSubsection(id);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Subsection deleted successfully',
+        data: null,
+      };
+    } catch (error) {
+      return {
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message || 'Error deleting subsection',
+        data: null,
+      };
+    }
+  }
+
+  @Delete('block/:id')
+  async deleteBlock(@Param('id') id: string): Promise<ApiResponse<any>> {
+    try {
+      await this.blockService.deleteBlock(id);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Block deleted successfully',
+        data: null,
+      };
+    } catch (error) {
+      return {
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message || 'Error deleting block',
+        data: null,
+      };
+    }
+  }
+
+  @Patch('section/:id')
+  async updateSection(
+    @Param('id') id: string,
+    @Body() updateData: { title?: string },
+  ): Promise<ApiResponse<any>> {
+    try {
+      const updatedSection = await this.sectionService.updateSection(id, updateData);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Section updated successfully',
+        data: updatedSection,
+      };
+    } catch (error) {
+      return {
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message || 'Error updating section',
+        data: null,
+      };
+    }
+  }
+
+  @Patch('block/:id')
+  async updateBlock(
+    @Param('id') id: string,
+    @Body() updateData: { content?: string },
+  ): Promise<ApiResponse<any>> {
+    try {
+      const updatedBlock = await this.blockService.updateBlock(id, updateData);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Block updated successfully',
+        data: updatedBlock,
+      };
+    } catch (error) {
+      return {
+        statusCode: error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message || 'Error updating block',
         data: null,
       };
     }

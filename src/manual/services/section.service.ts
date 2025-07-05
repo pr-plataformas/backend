@@ -16,7 +16,17 @@ export class SectionService {
   async createSection(dto: CreateSectionDto) {
     const manual = await this.manualRepo.findOneBy({ id: dto.manualId });
     if (!manual) throw new NotFoundException('Manual not found');
-    const section = this.sectionRepo.create({ title: dto.title, manual });
+    
+    // Calcular el orden automáticamente
+    const existingSectionsCount = await this.sectionRepo.count({
+      where: { manual: { id: dto.manualId } }
+    });
+    
+    const section = this.sectionRepo.create({ 
+      title: dto.title, 
+      manual,
+      order: existingSectionsCount
+    });
     return this.sectionRepo.save(section);
   }
 
@@ -37,5 +47,26 @@ export class SectionService {
       order: { order: 'ASC' },
     });
     return updatedSections;
+  }
+
+  async deleteSection(id: string) {
+    const section = await this.sectionRepo.findOneBy({ id });
+    if (!section) {
+      throw new NotFoundException('Section not found');
+    }
+    return this.sectionRepo.remove(section);
+  }
+
+  async updateSection(id: string, updateData: { title?: string }) {
+    const section = await this.sectionRepo.findOneBy({ id });
+    if (!section) {
+      throw new NotFoundException('Section not found');
+    }
+
+    if (updateData.title) {
+      section.title = updateData.title;
+    }
+
+    return this.sectionRepo.save(section);
   }
 }

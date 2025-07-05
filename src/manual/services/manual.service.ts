@@ -45,6 +45,14 @@ export class ManualService {
     });
   }
 
+  async deleteManual(id: string) {
+    const manual = await this.manualRepo.findOneBy({ id });
+    if (!manual) {
+      throw new Error('Manual not found');
+    }
+    return this.manualRepo.remove(manual);
+  }
+
   async createFullManual(dto: CreateFullManualDto) {
     const manual = this.manualRepo.create({ title: dto.title });
     if (dto.sections) {

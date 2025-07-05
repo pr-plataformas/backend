@@ -69,6 +69,7 @@ export class FirebaseAuthGuard implements CanActivate {
     }
     return authHeader.split(' ')[1];
   }
+  
 
   /**
    * Valida que el correo electrónico proporcionado sea un correo institucional UCN.
@@ -76,18 +77,24 @@ export class FirebaseAuthGuard implements CanActivate {
    * @throws ForbiddenException si el correo no es válido.
    */
   private validateInstitutionalEmail(email: string): void {
-    if (!email) {
-      this.logger.warn('No email provided in token');
-      throw new ForbiddenException('No email found in authentication token');
-    }
-    
-    if (!ucnRegex.test(email)) {
-      this.logger.warn(`Invalid institutional email attempted: ${email}`);
-      throw new ForbiddenException(
-        `Solo se permiten correos institucionales UCN. Email recibido: ${email}. Formatos válidos: @ucn.cl, @alumnos.ucn.cl, @ce.ucn.cl`
-      );
-    }
-    
-    this.logger.log(`Valid UCN email: ${email}`);
+  if (!email) {
+    this.logger.warn('No email provided in token');
+    throw new ForbiddenException('No email found in authentication token');
   }
+  
+  // Excepción para el email de soporte
+  if (email === 'soporte.videoteca@gmail.com') {
+    this.logger.log(`Support email allowed: ${email}`);
+    return;
+  }
+  
+  if (!ucnRegex.test(email)) {
+    this.logger.warn(`Invalid institutional email attempted: ${email}`);
+    throw new ForbiddenException(
+      `Solo se permiten correos institucionales UCN. Email recibido: ${email}. Formatos válidos: @ucn.cl, @alumnos.ucn.cl, @ce.ucn.cl`
+    );
+  }
+  
+  this.logger.log(`Valid UCN email: ${email}`);
+}
 }

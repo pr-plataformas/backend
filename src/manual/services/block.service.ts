@@ -19,7 +19,21 @@ export class BlockService {
       id: dto.subsectionId,
     });
     if (!subsection) throw new NotFoundException('Subsection not found');
-    const block = this.blockRepo.create({ ...dto, subsection });
+    
+    // Si no se proporciona order, calcularlo automáticamente
+    let order = dto.order;
+    if (order === undefined || order === null) {
+      const existingBlocksCount = await this.blockRepo.count({
+        where: { subsection: { id: dto.subsectionId } }
+      });
+      order = existingBlocksCount;
+    }
+    
+    const block = this.blockRepo.create({ 
+      ...dto, 
+      subsection,
+      order 
+    });
     return this.blockRepo.save(block);
   }
 
@@ -30,15 +44,34 @@ export class BlockService {
     const blockMap = new Map(blocks.map((b) => [b.id, b]));
     for (const { id, order } of dto.blocks) {
       const block = blockMap.get(id);
-      if (block) {
-        block.order = order;
-      }
+      if (block) block.order = order;
     }
     await this.blockRepo.save(Array.from(blockMap.values()));
-    const updatedBlocks = await this.blockRepo.find({
+    // Retorna los bloques reordenados
+    return this.blockRepo.find({
       where: { subsection: { id: dto.subsectionId } },
       order: { order: 'ASC' },
     });
-    return updatedBlocks;
+  }
+
+  async deleteBlock(id: string) {
+    const block = await this.blockRepo.findOneBy({ id });
+    if (!block) {
+      throw new NotFoundException('Block not found');
+    }
+    return this.blockRepo.remove(block);
+  }
+
+  async updateBlock(id: string, updateData: { content?: string }) {
+    const block = await this.blockRepo.findOneBy({ id });
+    if (!block) {
+      throw new NotFoundException('Block not found');
+    }
+
+    if (updateData.content !== undefined) {
+      block.content = updateData.content;
+    }
+
+    return this.blockRepo.save(block);
   }
 }
