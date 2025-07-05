@@ -1,7 +1,7 @@
-import { User } from '../../users/entities/user.entity';
+import { IUser } from 'src/users/types/user.interface';
 
-export class LoginResponseDto {
-  user: User;
+export interface LoginResponse {
+  user: IUser;
   accessToken: string;
   refreshToken: string;
 }

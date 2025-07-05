@@ -10,13 +10,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiResponse as ResponseType } from 'src/common/types/ApiResponse.interface';
+import { RequestWithUser } from 'src/common/types/RequestWithUser.interface';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { FirebaseAuthGuard } from '../auth/guards/firebase-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
-import { ApiResponse as ResponseType } from 'src/common/types/ApiResponse.interface';
+import { UsersService } from './users.service';
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
@@ -24,13 +24,13 @@ import { ApiResponse as ResponseType } from 'src/common/types/ApiResponse.interf
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(FirebaseAuthGuard)
   @ApiBearerAuth()
   @Get('me')
   @ApiResponse({ status: 200, description: 'Perfil del usuario autenticado.' })
-  getProfile(@Req() req): ResponseType<User> {
+  async getProfile(@Req() req: RequestWithUser): Promise<ResponseType<User>> {
     try {
-      const user = req.user; // El guard ya adjuntó el usuario autenticado
+      const userId = req.user.sub;
+      const user = await this.usersService.findById(userId);
       return {
         message: 'Perfil del usuario obtenido exitosamente',
         statusCode: 200,

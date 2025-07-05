@@ -1,12 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { VideoReportController } from './video-report.controller';
 import { VideoReportService } from './video-report.service';
+import { CreateVideoReportDto } from './dto/create-video-report.dto';
 
 describe('VideoReportController', () => {
   let controller: VideoReportController;
   let service: any;
 
-  const mockReport = { id: '1', reason: 'Test' };
+  const mockReport: CreateVideoReportDto = {
+    reason: 'Test reason',
+    userId: '1',
+    videoId: '1',
+  };
 
   beforeEach(async () => {
     service = {
@@ -30,7 +35,7 @@ describe('VideoReportController', () => {
 
   it('should create report', async () => {
     service.create.mockResolvedValue(mockReport);
-    const result = await controller.create({ reason: 'Test' });
+    const result = await controller.create(mockReport);
     expect(result).toEqual(mockReport);
   });
 

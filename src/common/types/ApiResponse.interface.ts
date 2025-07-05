@@ -1,5 +1,7 @@
+import { HttpStatus } from '@nestjs/common';
+
 export interface ApiResponse<T> {
-  statusCode: number;
+  statusCode: HttpStatus;
   message: string;
   data: T;
 }

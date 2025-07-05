@@ -1,22 +1,26 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
 import * as admin from 'firebase-admin';
+import { RefreshTokenResponse } from 'src/common/types/RefreshTokenResponse.interface';
+import config from 'src/config/config';
 import {
-  PROFESOR_UCN_REGEX,
   ADMIN_EMAILS,
+  PROFESOR_UCN_REGEX,
 } from '../common/constants/ucn-email.regex';
 import { UserRole } from '../common/enums/user-role.enum';
 import { JwtService } from '../jwt/jwt.service';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { JwtPayloadDto } from './dto/jwt-payload.dto';
-import { LoginResponseDto } from './dto/login-response.dto';
-import { RefreshResponseDto } from './dto/refresh-response.dto';
+import { LoginResponse } from './dto/login-response.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    @Inject(config.KEY)
+    private readonly configService: ConfigType<typeof config>,
   ) {}
 
   // Registro: crea un usuario nuevo
@@ -43,7 +47,7 @@ export class AuthService {
   // Login: valida Firebase, busca/crea usuario y genera tokens
   async loginWithFirebaseToken(
     decodedToken: admin.auth.DecodedIdToken,
-  ): Promise<LoginResponseDto> {
+  ): Promise<LoginResponse> {
     try {
       let user = await this.usersService.findByEmail(decodedToken.email);
       if (!user) {
@@ -61,7 +65,7 @@ export class AuthService {
   }
 
   // Login: valida Google, busca/crea usuario y genera tokens
-  async loginWithGoogleToken(googlePayload: any): Promise<LoginResponseDto> {
+  async loginWithGoogleToken(googlePayload: any): Promise<LoginResponse> {
     try {
       let user = await this.usersService.findByEmail(googlePayload.email);
       if (!user) {
@@ -71,8 +75,10 @@ export class AuthService {
         } as any);
       }
       const payload = this.buildJwtPayload(user);
+
       const accessToken = await this.jwtService.generateAccessToken(payload);
       const refreshToken = await this.jwtService.generateRefreshToken(payload);
+
       return { user, accessToken, refreshToken };
     } catch (error) {
       console.log('Error en login con Google:', error);
@@ -83,18 +89,23 @@ export class AuthService {
   }
 
   // Refresh: valida refreshToken, rota y genera nuevo accessToken y refreshToken
-  async refreshToken(refreshToken: string): Promise<RefreshResponseDto> {
+  async refreshToken(refreshToken: string): Promise<RefreshTokenResponse> {
     try {
       const payload = await this.jwtService.verifyAsync(refreshToken, {
-        secret: this.jwtService['configService'].jwt.refreshSecret,
+        secret: this.configService.jwt.refreshSecret,
       });
+
       const user = await this.usersService.findById(payload.sub);
       if (!user) throw new UnauthorizedException('Usuario no encontrado');
+
       const newPayload = this.buildJwtPayload(user);
-      const accessToken = await this.jwtService.generateAccessToken(newPayload);
+
+      const newAccessToken =
+        await this.jwtService.generateAccessToken(newPayload);
       const newRefreshToken =
         await this.jwtService.generateRefreshToken(newPayload);
-      return { accessToken, refreshToken: newRefreshToken };
+
+      return { newAccessToken, newRefreshToken };
     } catch (error) {
       throw new UnauthorizedException('Refresh token inválido o expirado.');
     }

@@ -1,22 +1,26 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   Post,
   Req,
-  Request,
   UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiResponse as SwaggerApiResponse,
   ApiTags,
+  ApiResponse as SwaggerApiResponse,
 } from '@nestjs/swagger';
+import { ApiResponse } from 'src/common/types/ApiResponse.interface';
+import { FirebaseRequest } from 'src/common/types/FirebaseRequest.interface';
+import { GoogleRequest } from 'src/common/types/GoogleRequest.interface';
+import { RefreshTokenResponse } from 'src/common/types/RefreshTokenResponse.interface';
 import { AuthService } from './auth.service';
+import { LoginResponse } from './dto/login-response.dto';
 import { FirebaseAuthGuard } from './guards/firebase-auth.guard';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
-import { ApiResponse } from 'src/common/types/ApiResponse.interface';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
 
@@ -30,7 +34,9 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse({ status: 200, description: 'Login exitoso.' })
   @Post('login')
-  async login(@Req() req): Promise<ApiResponse<any>> {
+  async login(
+    @Req() req: FirebaseRequest,
+  ): Promise<ApiResponse<LoginResponse>> {
     const decodedToken = req.firebaseDecoded;
     const { user, accessToken, refreshToken } =
       await this.authService.loginWithFirebaseToken(decodedToken);
@@ -44,12 +50,15 @@ export class AuthController {
       },
     };
   }
+
   @UseGuards(GoogleAuthGuard)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse({ status: 200, description: 'Login Google exitoso.' })
   @Post('login-google')
-  async loginGoogle(@Req() req): Promise<ApiResponse<any>> {
+  async loginGoogle(
+    @Req() req: GoogleRequest,
+  ): Promise<ApiResponse<LoginResponse>> {
     try {
       const decodedToken = req.googleDecoded;
       const { user, accessToken, refreshToken } =
@@ -76,17 +85,16 @@ export class AuthController {
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @SwaggerApiResponse({ status: 200, description: 'Token refrescado.' })
-  async refresh(
-    @Req() req,
-  ): Promise<ApiResponse<{ accessToken: string; refreshToken: string }>> {
+  async refreshTokens(
+    @Body() refreshToken: string,
+  ): Promise<ApiResponse<RefreshTokenResponse>> {
     try {
-      const { accessToken, refreshToken } = await this.authService.refreshToken(
-        req.refreshToken,
-      );
+      const { newAccessToken, newRefreshToken } =
+        await this.authService.refreshToken(refreshToken);
       return {
         statusCode: HttpStatus.OK,
         message: 'Tokens refrescados exitosamente',
-        data: { accessToken, refreshToken },
+        data: { newAccessToken, newRefreshToken },
       };
     } catch (error) {
       if (error.statusCode === HttpStatus.UNAUTHORIZED) {
@@ -105,9 +113,14 @@ export class AuthController {
       };
     }
   }
+
   @UseGuards(JwtAuthGuard)
   @Get('validate')
-  validateToken(@Request() req) {
-    return { valid: true, user: req.user };
+  validateToken(): ApiResponse<boolean> {
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Token válido',
+      data: true,
+    };
   }
 }
