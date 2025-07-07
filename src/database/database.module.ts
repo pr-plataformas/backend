@@ -44,7 +44,6 @@ import { Category } from '../category/entities/category.entity';
             Category,
           ],
           synchronize: process.env.NODE_ENV !== 'production',
-          logging: process.env.NODE_ENV !== 'production',
         };
       },
     }),

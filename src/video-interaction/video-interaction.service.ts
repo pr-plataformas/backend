@@ -16,7 +16,7 @@ export class VideoInteractionService {
     private readonly interactionRepository: Repository<VideoInteraction>,
   ) {}
 
-  create(createDto: CreateVideoInteractionDto) {
+  create(createDto: CreateVideoInteractionDto): Promise<VideoInteraction> {
     try {
       const { userId, videoId, ...rest } = createDto;
       const interaction = this.interactionRepository.create({
@@ -26,6 +26,7 @@ export class VideoInteractionService {
       });
       return this.interactionRepository.save(interaction);
     } catch (error) {
+      console.error('Error al crear la interacción de video:', error);
       throw new InternalServerErrorException(
         'Error al crear la interacción de video',
       );
@@ -51,6 +52,33 @@ export class VideoInteractionService {
     } catch (error) {
       throw new InternalServerErrorException(
         'Error al buscar la interacción de video',
+      );
+    }
+  }
+
+  async findByUserAndVideo(userId: string, videoId: string) {
+    try {
+      return await this.interactionRepository.find({
+        where: {
+          user: { id: userId },
+          video: { id: videoId },
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error al buscar interacciones por usuario y video',
+      );
+    }
+  }
+
+  async findByVideoId(videoId: string) {
+    try {
+      return await this.interactionRepository.find({
+        where: { video: { id: videoId } },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error al buscar interacciones por video',
       );
     }
   }
